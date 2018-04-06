@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.TaskRunner", "MonoDevelop.TaskRunner\MonoDevelop.TaskRunner.csproj", "{8800D37C-6267-41A1-99E6-6E5D5C3BF213}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDevelop.TestTaskRunner", "MonoDevelop.TestTaskRunner\MonoDevelop.TestTaskRunner.csproj", "{8B200612-65E7-402F-B1EC-373F3AB4196F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,5 +15,9 @@ Global
 		{8800D37C-6267-41A1-99E6-6E5D5C3BF213}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8800D37C-6267-41A1-99E6-6E5D5C3BF213}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8800D37C-6267-41A1-99E6-6E5D5C3BF213}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B200612-65E7-402F-B1EC-373F3AB4196F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B200612-65E7-402F-B1EC-373F3AB4196F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B200612-65E7-402F-B1EC-373F3AB4196F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B200612-65E7-402F-B1EC-373F3AB4196F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
