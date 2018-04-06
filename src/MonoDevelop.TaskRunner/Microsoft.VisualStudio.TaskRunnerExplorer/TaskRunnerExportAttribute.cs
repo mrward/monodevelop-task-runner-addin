@@ -1,5 +1,5 @@
 ﻿//
-// ITaskRunner.cs
+// TaskRunnerExportAttribute.cs
 //
 // Author:
 //       Matt Ward <matt.ward@microsoft.com>
@@ -24,14 +24,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using System;
+using System.ComponentModel.Composition;
 
 namespace Microsoft.VisualStudio.TaskRunnerExplorer
 {
-	public interface ITaskRunner
+	[AttributeUsage (AttributeTargets.Class, AllowMultiple = false)]
+	[MetadataAttribute]
+	public class TaskRunnerExportAttribute : ExportAttribute, ITaskRunnerMetadata
 	{
-		List<ITaskRunnerOption> Options { get; }
-		Task<ITaskRunnerConfig> ParseConfig (ITaskRunnerCommandContext context, string configPath);
+		public string[] FilesNames { get; set; }
+
+		public TaskRunnerExportAttribute (params string[] filesNames)
+			: base (typeof(ITaskRunner))
+		{
+			FilesNames = filesNames;
+		}
 	}
 }

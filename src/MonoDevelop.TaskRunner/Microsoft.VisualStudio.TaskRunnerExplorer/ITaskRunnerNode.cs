@@ -1,5 +1,5 @@
 ﻿//
-// ITaskRunner.cs
+// ITaskRunnerNode.cs
 //
 // Author:
 //       Matt Ward <matt.ward@microsoft.com>
@@ -29,9 +29,15 @@ using System.Threading.Tasks;
 
 namespace Microsoft.VisualStudio.TaskRunnerExplorer
 {
-	public interface ITaskRunner
+	public interface ITaskRunnerNode
 	{
-		List<ITaskRunnerOption> Options { get; }
-		Task<ITaskRunnerConfig> ParseConfig (ITaskRunnerCommandContext context, string configPath);
+		string Name { get; }
+		string Description { get; }
+		bool Invokable { get; }
+
+		List<ITaskRunnerNode> Children { get; }
+		ITaskRunnerCommand Command { get; }
+
+		Task<ITaskRunnerCommandResult> Invoke (ITaskRunnerCommandContext context);
 	}
 }

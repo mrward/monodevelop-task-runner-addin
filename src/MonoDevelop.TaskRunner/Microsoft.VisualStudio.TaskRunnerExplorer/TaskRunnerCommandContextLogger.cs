@@ -1,5 +1,5 @@
 ﻿//
-// ITaskRunner.cs
+// TaskRunnerCommandContextLogger.cs
 //
 // Author:
 //       Matt Ward <matt.ward@microsoft.com>
@@ -25,13 +25,20 @@
 // THE SOFTWARE.
 
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Microsoft.VisualStudio.TaskRunnerExplorer
 {
-	public interface ITaskRunner
+	public class TaskRunnerCommandContextLogger : ITaskRunnerCommandContextLogger
 	{
-		List<ITaskRunnerOption> Options { get; }
-		Task<ITaskRunnerConfig> ParseConfig (ITaskRunnerCommandContext context, string configPath);
+		public List<string> Errors { get; set; }
+		public List<string> Messages { get; set; }
+		public List<string> Warnings { get; set; }
+
+		public TaskRunnerCommandContextLogger ()
+		{
+			Errors = new List<string> ();
+			Messages = new List<string> ();
+			Warnings = new List<string> ();
+		}
 	}
 }

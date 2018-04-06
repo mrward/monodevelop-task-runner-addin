@@ -29,10 +29,27 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\AddinInfo.cs" />
+    <Compile Include="Microsoft.VisualStudio.TaskRunnerExplorer\ITaskRunner.cs" />
+    <Compile Include="Microsoft.VisualStudio.TaskRunnerExplorer\ITaskRunnerCommand.cs" />
+    <Compile Include="Microsoft.VisualStudio.TaskRunnerExplorer\ITaskRunnerCommandContext.cs" />
+    <Compile Include="Microsoft.VisualStudio.TaskRunnerExplorer\ITaskRunnerCommandContextLogger.cs" />
+    <Compile Include="Microsoft.VisualStudio.TaskRunnerExplorer\ITaskRunnerCommandResult.cs" />
+    <Compile Include="Microsoft.VisualStudio.TaskRunnerExplorer\ITaskRunnerCommandService.cs" />
+    <Compile Include="Microsoft.VisualStudio.TaskRunnerExplorer\ITaskRunnerConfig.cs" />
+    <Compile Include="Microsoft.VisualStudio.TaskRunnerExplorer\ITaskRunnerMetadata.cs" />
+    <Compile Include="Microsoft.VisualStudio.TaskRunnerExplorer\ITaskRunnerNode.cs" />
+    <Compile Include="Microsoft.VisualStudio.TaskRunnerExplorer\ITaskRunnerOption.cs" />
+    <Compile Include="Microsoft.VisualStudio.TaskRunnerExplorer\ITaskRunnerOutputListener.cs" />
+    <Compile Include="Microsoft.VisualStudio.TaskRunnerExplorer\TaskRunnerBindEvent.cs" />
+    <Compile Include="Microsoft.VisualStudio.TaskRunnerExplorer\TaskRunnerCommand.cs" />
+    <Compile Include="Microsoft.VisualStudio.TaskRunnerExplorer\TaskRunnerCommandContextLogger.cs" />
+    <Compile Include="Microsoft.VisualStudio.TaskRunnerExplorer\TaskRunnerExportAttribute.cs" />
+    <Compile Include="Microsoft.VisualStudio.TaskRunnerExplorer\TaskRunnerNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\MonoDevelop.TaskRunner.addin.xml" />

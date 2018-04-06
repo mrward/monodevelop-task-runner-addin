@@ -1,5 +1,5 @@
 ﻿//
-// ITaskRunner.cs
+// TaskRunnerCommand.cs
 //
 // Author:
 //       Matt Ward <matt.ward@microsoft.com>
@@ -24,14 +24,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
 namespace Microsoft.VisualStudio.TaskRunnerExplorer
 {
-	public interface ITaskRunner
+	public class TaskRunnerCommand : ITaskRunnerCommand
 	{
-		List<ITaskRunnerOption> Options { get; }
-		Task<ITaskRunnerConfig> ParseConfig (ITaskRunnerCommandContext context, string configPath);
+		public string Executable { get; private set; }
+		public string Args { get; set; }
+		public string WorkingDirectory { get; private set; }
+		public string Options { get; set; }
+
+		public TaskRunnerCommand (string workingDirectory, string exe, string args, string options = null)
+		{
+			WorkingDirectory = workingDirectory;
+			Executable = exe;
+			Args = args;
+			Options = options;
+		}
 	}
 }
