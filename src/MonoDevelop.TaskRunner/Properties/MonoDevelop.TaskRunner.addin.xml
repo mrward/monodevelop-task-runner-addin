@@ -1,5 +1,15 @@
 ﻿<ExtensionModel>
- 	<Runtime>
- 		<Import assembly="MonoDevelop.TaskRunner.dll" />
- 	</Runtime>
- </ExtensionModel>
+	<Runtime>
+		<Import assembly="MonoDevelop.TaskRunner.dll" />
+	</Runtime>
+
+	<Extension path="/MonoDevelop/Ide/Pads">
+		<Pad
+			id="MonoDevelop.TaskRunner.TaskRunnerExplorerPad"
+			_label="Task Runner Explorer"
+			class="MonoDevelop.TaskRunner.Gui.TaskRunnerExplorerPad"
+			defaultPlacement="Bottom"
+			defaultStatus="AutoHide"
+			defaultLayout="*" />
+	</Extension>
+</ExtensionModel>

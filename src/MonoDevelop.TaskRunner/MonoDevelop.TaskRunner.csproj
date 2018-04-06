@@ -30,6 +30,10 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -50,6 +54,11 @@
     <Compile Include="Microsoft.VisualStudio.TaskRunnerExplorer\TaskRunnerCommandContextLogger.cs" />
     <Compile Include="Microsoft.VisualStudio.TaskRunnerExplorer\TaskRunnerExportAttribute.cs" />
     <Compile Include="Microsoft.VisualStudio.TaskRunnerExplorer\TaskRunnerNode.cs" />
+    <Compile Include="MonoDevelop.TaskRunner.Gui\TaskRunnerExplorerPad.cs" />
+    <Compile Include="MonoDevelop.TaskRunner.Gui\TaskRunnerExplorerWidget.cs" />
+    <Compile Include="MonoDevelop.TaskRunner.Gui\TaskRunnerExplorerWidget.UI.cs">
+      <DependentUpon>TaskRunnerExplorerWidget.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\MonoDevelop.TaskRunner.addin.xml" />
