@@ -3,6 +3,10 @@
 		<Import assembly="MonoDevelop.TaskRunner.dll" />
 	</Runtime>
 
+	<Extension path="/MonoDevelop/Ide/Composition">
+		<Assembly file="MonoDevelop.TaskRunner.dll" />
+	</Extension>
+
 	<Extension path="/MonoDevelop/Ide/Pads">
 		<Pad
 			id="MonoDevelop.TaskRunner.TaskRunnerExplorerPad"
@@ -11,5 +15,9 @@
 			defaultPlacement="Bottom"
 			defaultStatus="AutoHide"
 			defaultLayout="*" />
+	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/StartupHandlers">
+		<Class class="MonoDevelop.TaskRunner.TaskRunnerStartupHandler" />
 	</Extension>
 </ExtensionModel>

@@ -59,6 +59,9 @@
     <Compile Include="MonoDevelop.TaskRunner.Gui\TaskRunnerExplorerWidget.UI.cs">
       <DependentUpon>TaskRunnerExplorerWidget.cs</DependentUpon>
     </Compile>
+    <Compile Include="MonoDevelop.TaskRunner\TaskRunnerServices.cs" />
+    <Compile Include="MonoDevelop.TaskRunner\TaskRunnerStartupHandler.cs" />
+    <Compile Include="MonoDevelop.TaskRunner\TaskRunnerProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\MonoDevelop.TaskRunner.addin.xml" />
