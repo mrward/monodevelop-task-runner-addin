@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using MonoDevelop.Core;
 using Xwt;
 
 namespace MonoDevelop.TaskRunner.Gui
@@ -37,6 +38,13 @@ namespace MonoDevelop.TaskRunner.Gui
 		TreeStore tasksTreeStore;
 		DataField<string> taskRunnerNodeNameField;
 		DataField<TaskRunnerTreeNode> taskRunnerField;
+		TreeStore bindingsTreeStore;
+		DataField<string> bindingNodeNameField;
+		DataField<TaskBindingTreeNode> bindingNodeField;
+		TaskBindingTreeNode beforeBuildBindingNode;
+		TaskBindingTreeNode afterBuildBindingNode;
+		TaskBindingTreeNode cleanBindingNode;
+		TaskBindingTreeNode projectOpenBindingNode;
 
 		void Build ()
 		{
@@ -69,9 +77,42 @@ namespace MonoDevelop.TaskRunner.Gui
 			paned.Panel2.Resize = true;
 
 			bindingsTreeView = new TreeView ();
+			bindingsTreeView.HeadersVisible = false;
 			bindingsVBox.PackStart (bindingsTreeView, true, true);
 
+			bindingNodeNameField = new DataField<string> ();
+			bindingNodeField = new DataField<TaskBindingTreeNode> ();
+			bindingsTreeStore = new TreeStore (bindingNodeNameField, bindingNodeField);
+			bindingsTreeView.DataSource = bindingsTreeStore;
+
+			column = new ListViewColumn ();
+			textCellView = new TextCellView ();
+			textCellView.MarkupField = bindingNodeNameField;
+			column.Views.Add (textCellView);
+			bindingsTreeView.Columns.Add (column);
+
+			AddBindingsTreeNodes ();
+
 			Content = paned;
+		}
+
+		void AddBindingsTreeNodes ()
+		{
+			beforeBuildBindingNode = AddBindingsTreeNode (GettextCatalog.GetString ("Before Build"));
+			afterBuildBindingNode = AddBindingsTreeNode (GettextCatalog.GetString ("After Build"));
+			cleanBindingNode = AddBindingsTreeNode (GettextCatalog.GetString ("Clean"));
+			projectOpenBindingNode = AddBindingsTreeNode (GettextCatalog.GetString ("Project Open"));
+		}
+
+		TaskBindingTreeNode AddBindingsTreeNode (string name)
+		{
+			var node = new TaskBindingTreeNode (name);
+
+			TreeNavigator navigator = bindingsTreeStore.AddNode ();
+			navigator.SetValue (bindingNodeNameField, node.Name);
+			navigator.SetValue (bindingNodeField, node);
+
+			return node;
 		}
 	}
 }

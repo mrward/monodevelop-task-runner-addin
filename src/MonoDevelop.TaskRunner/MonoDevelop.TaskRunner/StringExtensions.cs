@@ -1,5 +1,5 @@
 ﻿//
-// TaskRunnerTreeNode.cs
+// StringExtensions.cs
 //
 // Author:
 //       Matt Ward <matt.ward@microsoft.com>
@@ -24,51 +24,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.VisualStudio.TaskRunnerExplorer;
-
-namespace MonoDevelop.TaskRunner.Gui
+namespace MonoDevelop.TaskRunner
 {
-	class TaskRunnerTreeNode
+	static class StringExtensions
 	{
-		TaskRunnerInformation taskRunnerInfo;
-		ITaskRunnerNode taskRunnerNode;
-
-		public TaskRunnerTreeNode (TaskRunnerInformation task)
+		public static string ToBoldMarkup (this string text)
 		{
-			taskRunnerInfo = task;
-			Name = task.Name;
-		}
-
-		public TaskRunnerTreeNode (ITaskRunnerNode task, bool bold)
-		{
-			taskRunnerNode = task;
-			Name = taskRunnerNode.Name ?? string.Empty;
-
-			if (bold) {
-				Name = Name.ToBoldMarkup ();
-			}
-		}
-
-		public string Name { get; private set; }
-
-		public IEnumerable<TaskRunnerTreeNode> GetChildNodes ()
-		{
-			if (taskRunnerInfo != null) {
-				return GetChildNodes (taskRunnerInfo.TaskHierarchy, bold: true);
-			} else if (taskRunnerNode != null) {
-				return GetChildNodes (taskRunnerNode);
+			if (string.IsNullOrEmpty (text)) {
+				return string.Empty;
 			}
 
-			return Enumerable.Empty<TaskRunnerTreeNode> ();
-		}
-
-		IEnumerable<TaskRunnerTreeNode> GetChildNodes (ITaskRunnerNode task, bool bold = false)
-		{
-			foreach (var childTask in task.Children) {
-				yield return new TaskRunnerTreeNode (childTask, bold);
-			}
+			return "<b>" + text + "</b>";
 		}
 	}
 }

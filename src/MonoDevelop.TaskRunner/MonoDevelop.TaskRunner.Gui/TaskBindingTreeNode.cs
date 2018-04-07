@@ -1,5 +1,5 @@
 ﻿//
-// TaskRunnerTreeNode.cs
+// TaskBindingTreeNode.cs
 //
 // Author:
 //       Matt Ward <matt.ward@microsoft.com>
@@ -24,51 +24,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.VisualStudio.TaskRunnerExplorer;
-
 namespace MonoDevelop.TaskRunner.Gui
 {
-	class TaskRunnerTreeNode
+	class TaskBindingTreeNode
 	{
-		TaskRunnerInformation taskRunnerInfo;
-		ITaskRunnerNode taskRunnerNode;
-
-		public TaskRunnerTreeNode (TaskRunnerInformation task)
+		public TaskBindingTreeNode (string name)
 		{
-			taskRunnerInfo = task;
-			Name = task.Name;
-		}
-
-		public TaskRunnerTreeNode (ITaskRunnerNode task, bool bold)
-		{
-			taskRunnerNode = task;
-			Name = taskRunnerNode.Name ?? string.Empty;
-
-			if (bold) {
-				Name = Name.ToBoldMarkup ();
-			}
+			Name = name.ToBoldMarkup () + " (0)";
 		}
 
 		public string Name { get; private set; }
-
-		public IEnumerable<TaskRunnerTreeNode> GetChildNodes ()
-		{
-			if (taskRunnerInfo != null) {
-				return GetChildNodes (taskRunnerInfo.TaskHierarchy, bold: true);
-			} else if (taskRunnerNode != null) {
-				return GetChildNodes (taskRunnerNode);
-			}
-
-			return Enumerable.Empty<TaskRunnerTreeNode> ();
-		}
-
-		IEnumerable<TaskRunnerTreeNode> GetChildNodes (ITaskRunnerNode task, bool bold = false)
-		{
-			foreach (var childTask in task.Children) {
-				yield return new TaskRunnerTreeNode (childTask, bold);
-			}
-		}
 	}
 }

@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using MonoDevelop.Core;
 using Xwt;
 
 namespace MonoDevelop.TaskRunner.Gui
@@ -69,7 +70,7 @@ namespace MonoDevelop.TaskRunner.Gui
 				var rootNode = new TaskRunnerTreeNode (task);
 
 				TreeNavigator navigator = tasksTreeStore.AddNode ();
-				navigator.SetValue (nodeNameField, rootNode.Name);
+				navigator.SetValue (taskRunnerNodeNameField, rootNode.Name);
 				navigator.SetValue (taskRunnerField, rootNode);
 
 				AddChildNodes (navigator, rootNode);
@@ -82,7 +83,7 @@ namespace MonoDevelop.TaskRunner.Gui
 		{
 			foreach (var childNode in node.GetChildNodes ()) {
 				TreeNavigator childNavigator = navigator.AddChild ();
-				childNavigator.SetValue (nodeNameField, childNode.Name);
+				childNavigator.SetValue (taskRunnerNodeNameField, childNode.Name);
 				childNavigator.SetValue (taskRunnerField, childNode);
 
 				AddChildNodes (childNavigator, childNode);

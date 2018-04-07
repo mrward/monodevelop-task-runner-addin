@@ -68,6 +68,8 @@
     <Compile Include="MonoDevelop.TaskRunner\GroupedTaskRunnerInformation.cs" />
     <Compile Include="MonoDevelop.TaskRunner\GroupedTaskRunnerInformationComparer.cs" />
     <Compile Include="MonoDevelop.TaskRunner.Gui\TaskRunnerTreeNode.cs" />
+    <Compile Include="MonoDevelop.TaskRunner\StringExtensions.cs" />
+    <Compile Include="MonoDevelop.TaskRunner.Gui\TaskBindingTreeNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\MonoDevelop.TaskRunner.addin.xml" />
