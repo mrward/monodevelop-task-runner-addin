@@ -38,9 +38,22 @@ namespace MonoDevelop.TaskRunner.Gui
 		TaskRunnerExplorerWidget widget;
 		Button refreshButton;
 
+		public TaskRunnerExplorerPad ()
+		{
+			TaskRunnerServices.Workspace.TasksChanged += TasksChanged;
+		}
+
+		public override void Dispose ()
+		{
+			TaskRunnerServices.Workspace.TasksChanged -= TasksChanged;
+
+			base.Dispose ();
+		}
+
 		public override Control Control {
 			get {
 				widget = new TaskRunnerExplorerWidget ();
+				widget.AddTasks (TaskRunnerServices.Workspace.GroupedTasks);
 				return widget.ToGtkWidget ();
 			}
 		}
@@ -59,7 +72,13 @@ namespace MonoDevelop.TaskRunner.Gui
 
 		void OnButtonRefreshClick (object sender, EventArgs e)
 		{
-			
+			TaskRunnerServices.Workspace.Refresh ();
+		}
+
+		void TasksChanged (object sender, EventArgs e)
+		{
+			var workspace = (TaskRunnerWorkspace)sender;
+			widget.AddTasks (workspace.GroupedTasks);
 		}
 	}
 }

@@ -1,5 +1,5 @@
 ﻿//
-// TaskRunnerServices.cs
+// TaskRunnerConfigurationLocator.cs
 //
 // Author:
 //       Matt Ward <matt.ward@microsoft.com>
@@ -25,35 +25,24 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Core;
-using MonoDevelop.Ide.Composition;
+using System.Collections.Generic;
 
 namespace MonoDevelop.TaskRunner
 {
-	static class TaskRunnerServices
+	class GroupedTaskRunnerInformationComparer : IComparer<GroupedTaskRunnerInformation>
 	{
-		static TaskRunnerWorkspace workspace;
-		static TaskRunnerProvider taskRunnerProvider;
+		public static readonly IComparer<GroupedTaskRunnerInformation> Instance =
+			new GroupedTaskRunnerInformationComparer ();
 
-		public static TaskRunnerWorkspace Workspace {
-			get { return workspace; }
-		}
-
-		static internal void Initialize ()
+		int IComparer<GroupedTaskRunnerInformation>.Compare (GroupedTaskRunnerInformation x, GroupedTaskRunnerInformation y)
 		{
-			try {
-				InitializeServices ();
-			} catch (Exception ex) {
-				LoggingService.LogError ("TaskRunnerServices.Initialize error", ex);
+			if (x?.WorkspaceFileObject?.Name != null && y?.WorkspaceFileObject?.Name != null) {
+				return StringComparer.InvariantCultureIgnoreCase.Compare (
+					x.WorkspaceFileObject.Name,
+					y.WorkspaceFileObject.Name
+				);
 			}
-		}
-
-		static void InitializeServices ()
-		{
-			taskRunnerProvider = CompositionManager.GetExportedValue<TaskRunnerProvider> ();
-			taskRunnerProvider.Initialize ();
-
-			workspace = new TaskRunnerWorkspace (taskRunnerProvider);
+			return 0;
 		}
 	}
 }

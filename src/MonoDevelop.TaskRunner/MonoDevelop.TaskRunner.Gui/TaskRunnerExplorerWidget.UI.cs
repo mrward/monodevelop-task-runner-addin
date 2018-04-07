@@ -34,6 +34,9 @@ namespace MonoDevelop.TaskRunner.Gui
 		TreeView tasksTreeView;
 		TreeView bindingsTreeView;
 		HPaned paned;
+		TreeStore tasksTreeStore;
+		DataField<string> taskRunnerNodeNameField;
+		DataField<TaskRunnerTreeNode> taskRunnerField;
 
 		void Build ()
 		{
@@ -47,7 +50,19 @@ namespace MonoDevelop.TaskRunner.Gui
 			tasksVBox.PackStart (projectsComboBox);
 
 			tasksTreeView = new TreeView ();
+			tasksTreeView.HeadersVisible = false;
 			tasksVBox.PackStart (tasksTreeView, true, true);
+
+			taskRunnerField = new DataField<TaskRunnerTreeNode> ();
+			taskRunnerNodeNameField = new DataField<string> ();
+			tasksTreeStore = new TreeStore (taskRunnerNodeNameField, taskRunnerField);
+			tasksTreeView.DataSource = tasksTreeStore;
+
+			var column = new ListViewColumn ();
+			var textCellView = new TextCellView ();
+			textCellView.MarkupField = taskRunnerNodeNameField;
+			column.Views.Add (textCellView);
+			tasksTreeView.Columns.Add (column);
 
 			var bindingsVBox = new VBox ();
 			paned.Panel2.Content = bindingsVBox;

@@ -62,6 +62,12 @@
     <Compile Include="MonoDevelop.TaskRunner\TaskRunnerServices.cs" />
     <Compile Include="MonoDevelop.TaskRunner\TaskRunnerStartupHandler.cs" />
     <Compile Include="MonoDevelop.TaskRunner\TaskRunnerProvider.cs" />
+    <Compile Include="MonoDevelop.TaskRunner\TaskRunnerWorkspace.cs" />
+    <Compile Include="MonoDevelop.TaskRunner\TaskRunnerInformation.cs" />
+    <Compile Include="MonoDevelop.TaskRunner\TaskRunnerConfigurationLocator.cs" />
+    <Compile Include="MonoDevelop.TaskRunner\GroupedTaskRunnerInformation.cs" />
+    <Compile Include="MonoDevelop.TaskRunner\GroupedTaskRunnerInformationComparer.cs" />
+    <Compile Include="MonoDevelop.TaskRunner.Gui\TaskRunnerTreeNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\MonoDevelop.TaskRunner.addin.xml" />

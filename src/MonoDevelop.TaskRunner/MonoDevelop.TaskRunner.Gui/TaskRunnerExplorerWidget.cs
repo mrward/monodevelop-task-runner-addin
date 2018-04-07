@@ -24,6 +24,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+using System.Collections.Generic;
+using Xwt;
+
 namespace MonoDevelop.TaskRunner.Gui
 {
 	partial class TaskRunnerExplorerWidget
@@ -31,6 +35,59 @@ namespace MonoDevelop.TaskRunner.Gui
 		public TaskRunnerExplorerWidget ()
 		{
 			Build ();
+
+			projectsComboBox.SelectionChanged += ProjectComboBoxSelectionChanged;
+		}
+
+		public void ClearTasks ()
+		{
+			projectsComboBox.Items.Clear ();
+			tasksTreeStore.Clear ();
+		}
+
+		public void AddTasks (IEnumerable<GroupedTaskRunnerInformation> tasks)
+		{
+			ClearTasks ();
+
+			foreach (var task in tasks) {
+				projectsComboBox.Items.Add (task, task.Name);
+			}
+
+			projectsComboBox.SelectedIndex = 0;
+		}
+
+		void ProjectComboBoxSelectionChanged (object sender, EventArgs e)
+		{
+			tasksTreeStore.Clear ();
+
+			var groupedTaskRunner = projectsComboBox.SelectedItem as GroupedTaskRunnerInformation;
+			if (groupedTaskRunner == null) {
+				return;
+			}
+
+			foreach (var task in groupedTaskRunner.Tasks) {
+				var rootNode = new TaskRunnerTreeNode (task);
+
+				TreeNavigator navigator = tasksTreeStore.AddNode ();
+				navigator.SetValue (nodeNameField, rootNode.Name);
+				navigator.SetValue (taskRunnerField, rootNode);
+
+				AddChildNodes (navigator, rootNode);
+			}
+
+			tasksTreeView.ExpandAll ();
+		}
+
+		void AddChildNodes (TreeNavigator navigator, TaskRunnerTreeNode node)
+		{
+			foreach (var childNode in node.GetChildNodes ()) {
+				TreeNavigator childNavigator = navigator.AddChild ();
+				childNavigator.SetValue (nodeNameField, childNode.Name);
+				childNavigator.SetValue (taskRunnerField, childNode);
+
+				AddChildNodes (childNavigator, childNode);
+				navigator.MoveToParent ();
+			}
 		}
 	}
 }

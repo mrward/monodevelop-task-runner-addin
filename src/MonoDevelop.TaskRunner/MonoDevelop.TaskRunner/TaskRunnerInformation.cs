@@ -1,5 +1,5 @@
 ﻿//
-// TaskRunnerProvider.cs
+// TaskRunnerInformation.cs
 //
 // Author:
 //       Matt Ward <matt.ward@microsoft.com>
@@ -24,55 +24,35 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
-using System.Linq;
-using System.Reflection;
 using Microsoft.VisualStudio.TaskRunnerExplorer;
 using MonoDevelop.Core;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.TaskRunner
 {
-	[Export]
-	class TaskRunnerProvider
+	class TaskRunnerInformation
 	{
-		readonly List<ITaskRunner> taskRunners;
-		readonly Dictionary<string, ITaskRunner> fileNameMapping =
-			new Dictionary<string, ITaskRunner> (StringComparer.OrdinalIgnoreCase);
-
-		[ImportingConstructor]
-		public TaskRunnerProvider (
-			[ImportMany (typeof (ITaskRunner))]
-			IEnumerable<ITaskRunner> taskRunners)
+		public TaskRunnerInformation (
+			IWorkspaceFileObject workspaceFileObject,
+			ITaskRunnerConfig config,
+			IEnumerable<ITaskRunnerOption> options,
+			FilePath configFile)
 		{
-			this.taskRunners = taskRunners.ToList ();
+			WorkspaceFileObject = workspaceFileObject;
+			Config = config;
+			Options = options;
+			ConfigFile = configFile;
+
+			Name = configFile.FileName;
 		}
 
-		public IEnumerable<ITaskRunner> TaskRunners {
-			get { return taskRunners; }
-		}
+		public string Name { get; private set; }
+		public IWorkspaceFileObject WorkspaceFileObject { get; set; }
+		public FilePath ConfigFile { get; private set; }
+		public IEnumerable<ITaskRunnerOption> Options { get; private set; }
+		public ITaskRunnerConfig Config { get; private set; }
 
-		public void Initialize ()
-		{
-			foreach (ITaskRunner runner in taskRunners) {
-				foreach (var taskRunnerExport in runner.GetType ().GetCustomAttributes<TaskRunnerExportAttribute> ()) {
-					foreach (string fileName in taskRunnerExport.FilesNames) {
-						fileNameMapping [fileName] = runner;
-					}
-				}
-			}
-		}
-
-		public ITaskRunner GetTaskRunner (FilePath configFile)
-		{
-			string fileName = configFile.FileName;
-
-			if (fileNameMapping.TryGetValue (fileName, out ITaskRunner runner)) {
-				return runner;
-			}
-
-			return null;
-		}
+		public ITaskRunnerNode TaskHierarchy => Config?.TaskHierarchy;
 	}
 }

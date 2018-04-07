@@ -1,5 +1,5 @@
 ﻿//
-// TaskRunnerProvider.cs
+// GroupedTaskRunnerInformation.cs
 //
 // Author:
 //       Matt Ward <matt.ward@microsoft.com>
@@ -24,55 +24,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
-using System.Linq;
-using System.Reflection;
-using Microsoft.VisualStudio.TaskRunnerExplorer;
 using MonoDevelop.Core;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.TaskRunner
 {
-	[Export]
-	class TaskRunnerProvider
+	class GroupedTaskRunnerInformation
 	{
-		readonly List<ITaskRunner> taskRunners;
-		readonly Dictionary<string, ITaskRunner> fileNameMapping =
-			new Dictionary<string, ITaskRunner> (StringComparer.OrdinalIgnoreCase);
-
-		[ImportingConstructor]
-		public TaskRunnerProvider (
-			[ImportMany (typeof (ITaskRunner))]
-			IEnumerable<ITaskRunner> taskRunners)
+		public GroupedTaskRunnerInformation (
+			IWorkspaceFileObject workspaceFileObject,
+			IEnumerable<TaskRunnerInformation> tasks)
 		{
-			this.taskRunners = taskRunners.ToList ();
+			WorkspaceFileObject = workspaceFileObject;
+			Tasks = tasks;
+			Name = GetName (workspaceFileObject);
 		}
 
-		public IEnumerable<ITaskRunner> TaskRunners {
-			get { return taskRunners; }
-		}
-
-		public void Initialize ()
+		static string GetName (IWorkspaceFileObject workspaceFileObject)
 		{
-			foreach (ITaskRunner runner in taskRunners) {
-				foreach (var taskRunnerExport in runner.GetType ().GetCustomAttributes<TaskRunnerExportAttribute> ()) {
-					foreach (string fileName in taskRunnerExport.FilesNames) {
-						fileNameMapping [fileName] = runner;
-					}
-				}
-			}
-		}
-
-		public ITaskRunner GetTaskRunner (FilePath configFile)
-		{
-			string fileName = configFile.FileName;
-
-			if (fileNameMapping.TryGetValue (fileName, out ITaskRunner runner)) {
-				return runner;
+			if (workspaceFileObject is Solution solution) {
+				return GettextCatalog.GetString ("Solution '{0}'", solution.Name);
 			}
 
-			return null;
+			return workspaceFileObject.Name;
 		}
+
+		public string Name { get; private set; }
+		public IWorkspaceFileObject WorkspaceFileObject { get; private set; }
+		public IEnumerable<TaskRunnerInformation> Tasks { get; private set; }
 	}
 }

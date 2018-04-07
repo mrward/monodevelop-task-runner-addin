@@ -1,5 +1,5 @@
 ﻿//
-// TaskRunnerProvider.cs
+// TaskRunnerTreeNode.cs
 //
 // Author:
 //       Matt Ward <matt.ward@microsoft.com>
@@ -24,55 +24,51 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Linq;
-using System.Reflection;
 using Microsoft.VisualStudio.TaskRunnerExplorer;
-using MonoDevelop.Core;
 
-namespace MonoDevelop.TaskRunner
+namespace MonoDevelop.TaskRunner.Gui
 {
-	[Export]
-	class TaskRunnerProvider
+	class TaskRunnerTreeNode
 	{
-		readonly List<ITaskRunner> taskRunners;
-		readonly Dictionary<string, ITaskRunner> fileNameMapping =
-			new Dictionary<string, ITaskRunner> (StringComparer.OrdinalIgnoreCase);
+		TaskRunnerInformation taskRunnerInfo;
+		ITaskRunnerNode taskRunnerNode;
 
-		[ImportingConstructor]
-		public TaskRunnerProvider (
-			[ImportMany (typeof (ITaskRunner))]
-			IEnumerable<ITaskRunner> taskRunners)
+		public TaskRunnerTreeNode (TaskRunnerInformation task)
 		{
-			this.taskRunners = taskRunners.ToList ();
+			taskRunnerInfo = task;
+			Name = task.Name;
 		}
 
-		public IEnumerable<ITaskRunner> TaskRunners {
-			get { return taskRunners; }
-		}
-
-		public void Initialize ()
+		public TaskRunnerTreeNode (ITaskRunnerNode task, bool bold)
 		{
-			foreach (ITaskRunner runner in taskRunners) {
-				foreach (var taskRunnerExport in runner.GetType ().GetCustomAttributes<TaskRunnerExportAttribute> ()) {
-					foreach (string fileName in taskRunnerExport.FilesNames) {
-						fileNameMapping [fileName] = runner;
-					}
-				}
+			taskRunnerNode = task;
+			Name = taskRunnerNode.Name ?? string.Empty;
+
+			if (bold) {
+				Name = "<b>" + Name + "</b>";
 			}
 		}
 
-		public ITaskRunner GetTaskRunner (FilePath configFile)
-		{
-			string fileName = configFile.FileName;
+		public string Name { get; private set; }
 
-			if (fileNameMapping.TryGetValue (fileName, out ITaskRunner runner)) {
-				return runner;
+		public IEnumerable<TaskRunnerTreeNode> GetChildNodes ()
+		{
+			if (taskRunnerInfo != null) {
+				return GetChildNodes (taskRunnerInfo.TaskHierarchy, bold: true);
+			} else if (taskRunnerNode != null) {
+				return GetChildNodes (taskRunnerNode);
 			}
 
-			return null;
+			return Enumerable.Empty<TaskRunnerTreeNode> ();
+		}
+
+		IEnumerable<TaskRunnerTreeNode> GetChildNodes (ITaskRunnerNode task, bool bold = false)
+		{
+			foreach (var childTask in task.Children) {
+				yield return new TaskRunnerTreeNode (childTask, bold);
+			}
 		}
 	}
 }
