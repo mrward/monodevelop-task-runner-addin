@@ -50,12 +50,12 @@ namespace MonoDevelop.TestTaskRunner
 
 			root.Children.Add (new TaskRunnerNode ("Task 1", true) {
 				Description = "Executes Task 1.",
-				Command = new TaskRunnerCommand (cwd, "bash", "/c echo Task 1")
+				Command = new TaskRunnerCommand (cwd, "bash", "-c \"echo Task 1\"")
 			});
 
 			root.Children.Add (new TaskRunnerNode ("Task 2", true) {
 				Description = "Executes Task 2.",
-				Command = new TaskRunnerCommand (cwd, "bash", "/c echo Task 2")
+				Command = new TaskRunnerCommand (cwd, "bash", "-c \"echo Task 2\"")
 			});
 
 			return root;
