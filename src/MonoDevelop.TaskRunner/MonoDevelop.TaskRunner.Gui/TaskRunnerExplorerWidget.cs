@@ -31,6 +31,7 @@ using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
 using Xwt;
+using Xwt.Formats;
 
 namespace MonoDevelop.TaskRunner.Gui
 {
@@ -168,6 +169,11 @@ namespace MonoDevelop.TaskRunner.Gui
 			if (CanRunSelectedTask ()) {
 				OnRunTask (selectedTaskRunnerNode.TaskRunner);
 			}
+		}
+
+		internal void WriteOutput (string text)
+		{
+			outputView.LoadText (outputView.PlainText + text + Environment.NewLine, TextFormat.Plain);
 		}
 	}
 }

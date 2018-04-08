@@ -1,5 +1,5 @@
 ﻿//
-// TaskRunnerCommandService.cs
+// TaskRunnerProgressMonitor.cs
 //
 // Author:
 //       Matt Ward <matt.ward@microsoft.com>
@@ -24,48 +24,60 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Threading.Tasks;
-using Microsoft.VisualStudio.TaskRunnerExplorer;
-using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
+using MonoDevelop.Core;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui;
+using System.Text;
 
 namespace MonoDevelop.TaskRunner
 {
-	class TaskRunnerCommandService : ITaskRunnerCommandService
+	class TaskRunnerProgressMonitor : OutputProgressMonitor
 	{
-		ProcessAsyncOperation currentOperation;
+		OutputProgressMonitor outputProgressMonitor;
+		StringBuilder standardOutput = new StringBuilder ();
+		StringBuilder standardError = new StringBuilder ();
 
-		public async Task<ITaskRunnerCommandResult> ExecuteCommand (ITaskRunnerCommand command)
+		public TaskRunnerProgressMonitor ()
 		{
-			using (var monitor = new TaskRunnerProgressMonitor ()) {
-				monitor.Log.WriteLine (command.ToCommandLine ());
-
-				var result = Runtime.ProcessService.StartConsoleProcess (
-					command.Executable,
-					command.Args,
-					command.WorkingDirectory,
-					monitor.Console);
-
-				currentOperation = result;
-
-				await result.Task;
-
-				currentOperation = null;
-
-				return new TaskRunnerCommandResult {
-					StandardOutput = monitor.GetStandardOutputText (),
-					StandardError = monitor.GetStandardErrorText (),
-					ExitCode = result.ExitCode
-				};
-			}
+			outputProgressMonitor = CreateProgressMonitor ();
+			AddFollowerMonitor (outputProgressMonitor);
 		}
 
-		public void Stop ()
+		public override OperationConsole Console {
+			get { return outputProgressMonitor.Console; }
+		}
+
+		OutputProgressMonitor CreateProgressMonitor ()
 		{
-			if (currentOperation != null) {
-				currentOperation.Cancel ();
-			}
+			return IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (
+				GettextCatalog.GetString ("Task Runner Output"),
+				Stock.Console,
+				false,
+				true
+			);
+		}
+
+		protected override void OnWriteLog (string message)
+		{
+			standardOutput.Append (message);
+			base.OnWriteLog (message);
+		}
+
+		protected override void OnWriteErrorLog (string message)
+		{
+			standardError.Append (message);
+			base.OnWriteErrorLog (message);
+		}
+
+		public string GetStandardErrorText ()
+		{
+			return standardError.ToString ();
+		}
+
+		public string GetStandardOutputText ()
+		{
+			return standardOutput.ToString ();
 		}
 	}
 }

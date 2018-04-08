@@ -93,11 +93,19 @@ namespace MonoDevelop.TaskRunner.Gui
 			}
 		}
 
-		Task RunTaskAsync (ITaskRunnerNode taskRunnerNode)
+		async Task RunTaskAsync (ITaskRunnerNode taskRunnerNode)
 		{
 			widget.OpenTaskOutputTab (taskRunnerNode.Name);
+
+			widget.WriteOutput (taskRunnerNode.Command.ToCommandLine ());
+
 			var context = new TaskRunnerCommandContext ();
-			return taskRunnerNode.Invoke (context);
+			var result = await taskRunnerNode.Invoke (context);
+
+			if (result != null) {
+				string message = GettextCatalog.GetString ("Process terminated with code {0}{1}", result.ExitCode, Environment.NewLine);
+				widget.WriteOutput (message);
+			}
 		}
 	}
 }

@@ -75,6 +75,7 @@
     <Compile Include="MonoDevelop.TaskRunner\TaskRunnerCommandService.cs" />
     <Compile Include="MonoDevelop.TaskRunner\TaskRunnerCommandResult.cs" />
     <Compile Include="MonoDevelop.TaskRunner\ITaskRunnerCommandExtensions.cs" />
+    <Compile Include="MonoDevelop.TaskRunner\TaskRunnerProgressMonitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\MonoDevelop.TaskRunner.addin.xml" />
