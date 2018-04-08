@@ -86,7 +86,7 @@ namespace MonoDevelop.TaskRunner.Gui
 		void RunTask (ITaskRunnerNode taskRunnerNode)
 		{
 			try {
-				
+				widget.OpenTaskOutputTab (taskRunnerNode.Name);
 			} catch (Exception ex) {
 				LoggingService.LogInfo ("TaskRunnerExplorerPad.RunTask error", ex);
 			}

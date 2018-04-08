@@ -28,6 +28,7 @@ using MonoDevelop.Core;
 using Xwt;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.TaskRunner.Gui
 {
@@ -47,6 +48,9 @@ namespace MonoDevelop.TaskRunner.Gui
 		TaskBindingTreeNode afterBuildBindingNode;
 		TaskBindingTreeNode cleanBindingNode;
 		TaskBindingTreeNode projectOpenBindingNode;
+		Notebook notebook;
+		NotebookTab taskOutputTab;
+		RichTextView outputView;
 
 		void Build ()
 		{
@@ -74,13 +78,14 @@ namespace MonoDevelop.TaskRunner.Gui
 			column.Views.Add (textCellView);
 			tasksTreeView.Columns.Add (column);
 
-			var bindingsVBox = new VBox ();
-			paned.Panel2.Content = bindingsVBox;
+			notebook = new Notebook ();
+			notebook.TabOrientation = NotebookTabOrientation.Top;
+			paned.Panel2.Content = notebook;
 			paned.Panel2.Resize = true;
 
 			bindingsTreeView = new TreeView ();
 			bindingsTreeView.HeadersVisible = false;
-			bindingsVBox.PackStart (bindingsTreeView, true, true);
+			notebook.Add (bindingsTreeView, GettextCatalog.GetString ("Bindings"));
 
 			bindingNodeNameField = new DataField<string> ();
 			bindingNodeField = new DataField<TaskBindingTreeNode> ();

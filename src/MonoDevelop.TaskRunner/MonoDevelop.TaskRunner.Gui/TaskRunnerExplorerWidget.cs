@@ -31,6 +31,7 @@ using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
 using Xwt;
+using Xwt.Formats;
 
 namespace MonoDevelop.TaskRunner.Gui
 {
@@ -88,6 +89,18 @@ namespace MonoDevelop.TaskRunner.Gui
 			}
 
 			tasksTreeView.ExpandAll ();
+		}
+
+		public void OpenTaskOutputTab (string name)
+		{
+			if (taskOutputTab == null) {
+				outputView = new RichTextView ();
+				notebook.Add (outputView, name);
+				taskOutputTab = notebook.Tabs [notebook.Tabs.Count - 1];
+			}
+
+			taskOutputTab.Label = name;
+			notebook.CurrentTab = taskOutputTab;
 		}
 
 		void AddChildNodes (TreeNavigator navigator, TaskRunnerTreeNode node)
