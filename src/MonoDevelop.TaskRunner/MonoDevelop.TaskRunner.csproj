@@ -71,6 +71,10 @@
     <Compile Include="MonoDevelop.TaskRunner\StringExtensions.cs" />
     <Compile Include="MonoDevelop.TaskRunner.Gui\TaskBindingTreeNode.cs" />
     <Compile Include="MonoDevelop.TaskRunner\TaskRunnerCommands.cs" />
+    <Compile Include="MonoDevelop.TaskRunner\TaskRunnerCommandContext.cs" />
+    <Compile Include="MonoDevelop.TaskRunner\TaskRunnerCommandService.cs" />
+    <Compile Include="MonoDevelop.TaskRunner\TaskRunnerCommandResult.cs" />
+    <Compile Include="MonoDevelop.TaskRunner\ITaskRunnerCommandExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\MonoDevelop.TaskRunner.addin.xml" />

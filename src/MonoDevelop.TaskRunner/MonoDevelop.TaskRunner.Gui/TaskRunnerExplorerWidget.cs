@@ -31,7 +31,6 @@ using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
 using Xwt;
-using Xwt.Formats;
 
 namespace MonoDevelop.TaskRunner.Gui
 {

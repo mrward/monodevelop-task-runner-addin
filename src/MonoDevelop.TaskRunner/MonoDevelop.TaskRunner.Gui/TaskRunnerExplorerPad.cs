@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Threading.Tasks;
 using Gtk;
 using Microsoft.VisualStudio.TaskRunnerExplorer;
 using MonoDevelop.Components;
@@ -86,10 +87,17 @@ namespace MonoDevelop.TaskRunner.Gui
 		void RunTask (ITaskRunnerNode taskRunnerNode)
 		{
 			try {
-				widget.OpenTaskOutputTab (taskRunnerNode.Name);
+				RunTaskAsync (taskRunnerNode).Ignore ();
 			} catch (Exception ex) {
 				LoggingService.LogInfo ("TaskRunnerExplorerPad.RunTask error", ex);
 			}
+		}
+
+		Task RunTaskAsync (ITaskRunnerNode taskRunnerNode)
+		{
+			widget.OpenTaskOutputTab (taskRunnerNode.Name);
+			var context = new TaskRunnerCommandContext ();
+			return taskRunnerNode.Invoke (context);
 		}
 	}
 }
