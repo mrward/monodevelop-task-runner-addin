@@ -70,6 +70,7 @@
     <Compile Include="MonoDevelop.TaskRunner.Gui\TaskRunnerTreeNode.cs" />
     <Compile Include="MonoDevelop.TaskRunner\StringExtensions.cs" />
     <Compile Include="MonoDevelop.TaskRunner.Gui\TaskBindingTreeNode.cs" />
+    <Compile Include="MonoDevelop.TaskRunner\TaskRunnerCommands.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\MonoDevelop.TaskRunner.addin.xml" />

@@ -26,22 +26,33 @@
 
 using System;
 using System.Collections.Generic;
-using MonoDevelop.Core;
+using Microsoft.VisualStudio.TaskRunnerExplorer;
+using MonoDevelop.Components;
+using MonoDevelop.Components.Commands;
+using MonoDevelop.Ide;
 using Xwt;
 
 namespace MonoDevelop.TaskRunner.Gui
 {
 	partial class TaskRunnerExplorerWidget
 	{
+		TaskRunnerTreeNode selectedTaskRunnerNode;
+
 		public TaskRunnerExplorerWidget ()
 		{
 			Build ();
 
 			projectsComboBox.SelectionChanged += ProjectComboBoxSelectionChanged;
+
+			tasksTreeView.ButtonPressed += TasksTreeViewButtonPressed;
+			tasksTreeView.RowActivated += TasksTreeViewRowActivated;
 		}
+
+		public Action<ITaskRunnerNode> OnRunTask = _ => { };
 
 		public void ClearTasks ()
 		{
+			selectedTaskRunnerNode = null;
 			projectsComboBox.Items.Clear ();
 			tasksTreeStore.Clear ();
 		}
@@ -88,6 +99,62 @@ namespace MonoDevelop.TaskRunner.Gui
 
 				AddChildNodes (childNavigator, childNode);
 				navigator.MoveToParent ();
+			}
+		}
+
+		void TasksTreeViewRowActivated (object sender, TreeViewRowEventArgs e)
+		{
+			selectedTaskRunnerNode = GetTaskRunnerTreeNode (e.Position);
+			RunTask ();
+		}
+
+		bool CanRunSelectedTask ()
+		{
+			return selectedTaskRunnerNode?.IsInvokable == true;
+		}
+
+		TaskRunnerTreeNode GetTaskRunnerTreeNode (TreePosition position)
+		{
+			if (position == null)
+				return null;
+
+			TreeNavigator navigator = tasksTreeStore.GetNavigatorAt (position);
+			if (navigator == null)
+				return null;
+
+			return navigator.GetValue (taskRunnerField);
+		}
+
+		TaskRunnerTreeNode GetTaskRunnerTreeNode (Point position)
+		{
+			TreePosition treePosition = tasksTreeView.GetRowAtPosition (position);
+			return GetTaskRunnerTreeNode (treePosition);
+		}
+
+		void TasksTreeViewButtonPressed (object sender, ButtonEventArgs e)
+		{
+			if (!e.IsContextMenuTrigger)
+				return;
+
+			selectedTaskRunnerNode = GetTaskRunnerTreeNode (e.Position);
+			if (selectedTaskRunnerNode == null)
+				return;
+
+			var commands = IdeApp.CommandService.CreateCommandEntrySet ("/MonoDevelop/TaskRunnerExplorerPad/TaskContextMenu");
+			IdeApp.CommandService.ShowContextMenu (tasksTreeView.ToGtkWidget (), (int)e.X, (int)e.Y, commands, this);
+		}
+
+		[CommandUpdateHandler (TaskRunnerCommands.RunTask)]
+		void OnUpdateRun (CommandInfo info)
+		{
+			info.Enabled = CanRunSelectedTask ();
+		}
+
+		[CommandHandler (TaskRunnerCommands.RunTask)]
+		void RunTask ()
+		{
+			if (CanRunSelectedTask ()) {
+				OnRunTask (selectedTaskRunnerNode.TaskRunner);
 			}
 		}
 	}

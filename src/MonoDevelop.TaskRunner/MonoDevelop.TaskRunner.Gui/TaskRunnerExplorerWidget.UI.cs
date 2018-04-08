@@ -26,6 +26,8 @@
 
 using MonoDevelop.Core;
 using Xwt;
+using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.TaskRunner.Gui
 {

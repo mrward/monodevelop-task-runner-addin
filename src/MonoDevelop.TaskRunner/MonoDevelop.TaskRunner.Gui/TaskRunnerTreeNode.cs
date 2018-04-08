@@ -53,6 +53,16 @@ namespace MonoDevelop.TaskRunner.Gui
 
 		public string Name { get; private set; }
 
+		public bool IsInvokable {
+			get {
+				return taskRunnerNode?.Invokable == true;
+			}
+		}
+
+		public ITaskRunnerNode TaskRunner {
+			get { return taskRunnerNode; }
+		}
+
 		public IEnumerable<TaskRunnerTreeNode> GetChildNodes ()
 		{
 			if (taskRunnerInfo != null) {

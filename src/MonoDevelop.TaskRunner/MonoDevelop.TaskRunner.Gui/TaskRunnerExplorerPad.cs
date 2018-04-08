@@ -26,6 +26,7 @@
 
 using System;
 using Gtk;
+using Microsoft.VisualStudio.TaskRunnerExplorer;
 using MonoDevelop.Components;
 using MonoDevelop.Components.Docking;
 using MonoDevelop.Core;
@@ -53,6 +54,7 @@ namespace MonoDevelop.TaskRunner.Gui
 		public override Control Control {
 			get {
 				widget = new TaskRunnerExplorerWidget ();
+				widget.OnRunTask = RunTask;
 				widget.AddTasks (TaskRunnerServices.Workspace.GroupedTasks);
 				return widget.ToGtkWidget ();
 			}
@@ -79,6 +81,15 @@ namespace MonoDevelop.TaskRunner.Gui
 		{
 			var workspace = (TaskRunnerWorkspace)sender;
 			widget.AddTasks (workspace.GroupedTasks);
+		}
+
+		void RunTask (ITaskRunnerNode taskRunnerNode)
+		{
+			try {
+				
+			} catch (Exception ex) {
+				LoggingService.LogInfo ("TaskRunnerExplorerPad.RunTask error", ex);
+			}
 		}
 	}
 }

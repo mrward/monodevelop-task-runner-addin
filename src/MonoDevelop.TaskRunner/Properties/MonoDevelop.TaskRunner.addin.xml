@@ -7,6 +7,24 @@
 		<Assembly file="MonoDevelop.TaskRunner.dll" />
 	</Extension>
 
+	<Extension path="/MonoDevelop/Ide/Commands">
+		<Category _name="Task Runner" id="TaskRunner">
+			<Command
+				id="MonoDevelop.TaskRunner.TaskRunnerCommands.RunTask"
+				_description="Runs the task"
+				_label="Run" />
+		</Category>
+	</Extension>
+
+	<ExtensionPoint path="/MonoDevelop/TaskRunnerExplorerPad/TaskContextMenu" name="Task Runner Explorer tasks tree view context menu">
+		<Description>Task Runner Explorer context menu for the tasks tree view.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet" />
+	</ExtensionPoint>
+
+	<Extension path="/MonoDevelop/TaskRunnerExplorerPad/TaskContextMenu">
+		<CommandItem id="MonoDevelop.TaskRunner.TaskRunnerCommands.RunTask" />
+	</Extension>
+
 	<Extension path="/MonoDevelop/Ide/Pads">
 		<Pad
 			id="MonoDevelop.TaskRunner.TaskRunnerExplorerPad"
