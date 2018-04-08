@@ -95,7 +95,10 @@ namespace MonoDevelop.TaskRunner.Gui
 		{
 			if (taskOutputTab == null) {
 				outputView = new RichTextView ();
-				notebook.Add (outputView, name);
+				var scrollView = new ScrollView ();
+				scrollView.HorizontalScrollPolicy = ScrollPolicy.Automatic;
+				scrollView.Content = outputView;
+				notebook.Add (scrollView, name);
 				taskOutputTab = notebook.Tabs [notebook.Tabs.Count - 1];
 			}
 
