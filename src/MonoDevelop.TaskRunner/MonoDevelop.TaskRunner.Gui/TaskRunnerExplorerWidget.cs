@@ -31,7 +31,7 @@ using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
 using Xwt;
-using Xwt.Formats;
+using Xwt.Backends;
 
 namespace MonoDevelop.TaskRunner.Gui
 {
@@ -176,7 +176,13 @@ namespace MonoDevelop.TaskRunner.Gui
 
 		internal void WriteOutput (string text)
 		{
-			outputView.LoadText (outputView.PlainText + text + Environment.NewLine, TextFormat.Plain);
+			var backend = outputView.GetBackend () as IRichTextViewBackend;
+			IRichTextBuffer buffer = backend.CurrentBuffer;
+			if (buffer == null) {
+				buffer = backend.CreateBuffer ();
+				backend.SetBuffer (buffer);
+			}
+			buffer.EmitText (text + Environment.NewLine, RichTextInlineStyle.Normal);
 		}
 	}
 }
