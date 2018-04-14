@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TaskRunnerExplorer;
 using MonoDevelop.Core;
@@ -45,6 +46,7 @@ namespace MonoDevelop.TaskRunner
 			ConfigFile = configFile;
 
 			Name = configFile.FileName;
+			Bindings = new TaskRunnerBindings (Config, configFile);
 		}
 
 		public string Name { get; private set; }
@@ -52,7 +54,18 @@ namespace MonoDevelop.TaskRunner
 		public FilePath ConfigFile { get; private set; }
 		public IEnumerable<ITaskRunnerOption> Options { get; private set; }
 		public ITaskRunnerConfig Config { get; private set; }
+		public TaskRunnerBindings Bindings { get; private set; }
 
 		public ITaskRunnerNode TaskHierarchy => Config?.TaskHierarchy;
+
+		public bool IsBindingEnabled (TaskRunnerBindEvent bindEvent, ITaskRunnerNode taskRunnerNode)
+		{
+			return Bindings.IsBindingEnabled (bindEvent, taskRunnerNode);
+		}
+
+		public void ToggleBinding (TaskRunnerBindEvent bindEvent, ITaskRunnerNode taskRunnerNode)
+		{
+			Bindings.ToggleBinding (bindEvent, taskRunnerNode);
+		}
 	}
 }

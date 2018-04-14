@@ -41,9 +41,11 @@ namespace MonoDevelop.TaskRunner.Gui
 			Name = task.Name;
 		}
 
-		public TaskRunnerTreeNode (ITaskRunnerNode task, bool bold)
+		public TaskRunnerTreeNode (TaskRunnerInformation task, ITaskRunnerNode node, bool bold)
 		{
-			taskRunnerNode = task;
+			taskRunnerInfo = task;
+			taskRunnerNode = node;
+
 			Name = taskRunnerNode.Name ?? string.Empty;
 
 			if (bold) {
@@ -63,12 +65,16 @@ namespace MonoDevelop.TaskRunner.Gui
 			get { return taskRunnerNode; }
 		}
 
+		public TaskRunnerInformation TaskInfo {
+			get { return taskRunnerInfo; }
+		}
+
 		public IEnumerable<TaskRunnerTreeNode> GetChildNodes ()
 		{
-			if (taskRunnerInfo != null) {
-				return GetChildNodes (taskRunnerInfo.TaskHierarchy, bold: true);
-			} else if (taskRunnerNode != null) {
+			if (taskRunnerNode != null) {
 				return GetChildNodes (taskRunnerNode);
+			} else if (taskRunnerInfo?.TaskHierarchy != null) {
+				return GetChildNodes (taskRunnerInfo.TaskHierarchy, bold: true);
 			}
 
 			return Enumerable.Empty<TaskRunnerTreeNode> ();
@@ -76,9 +82,14 @@ namespace MonoDevelop.TaskRunner.Gui
 
 		IEnumerable<TaskRunnerTreeNode> GetChildNodes (ITaskRunnerNode task, bool bold = false)
 		{
-			foreach (var childTask in task.Children) {
-				yield return new TaskRunnerTreeNode (childTask, bold);
+			foreach (ITaskRunnerNode childTask in task.Children) {
+				yield return new TaskRunnerTreeNode (taskRunnerInfo, childTask, bold);
 			}
+		}
+
+		public bool IsBindingEnabled (TaskRunnerBindEvent bindEvent)
+		{
+			return taskRunnerInfo.IsBindingEnabled (bindEvent, taskRunnerNode);
 		}
 	}
 }

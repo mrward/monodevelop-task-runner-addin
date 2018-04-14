@@ -31,6 +31,7 @@ using Microsoft.VisualStudio.TaskRunnerExplorer;
 using MonoDevelop.Components;
 using MonoDevelop.Components.Docking;
 using MonoDevelop.Core;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.TaskRunner.Gui
@@ -56,6 +57,7 @@ namespace MonoDevelop.TaskRunner.Gui
 			get {
 				widget = new TaskRunnerExplorerWidget ();
 				widget.OnRunTask = RunTask;
+				widget.OnToggleBinding = ToggleBinding;
 				widget.AddTasks (TaskRunnerServices.Workspace.GroupedTasks);
 				return widget.ToGtkWidget ();
 			}
@@ -105,6 +107,16 @@ namespace MonoDevelop.TaskRunner.Gui
 			if (result != null) {
 				string message = GettextCatalog.GetString ("Process terminated with code {0}{1}", result.ExitCode, Environment.NewLine);
 				widget.WriteOutput (message);
+			}
+		}
+
+		void ToggleBinding (TaskRunnerInformation taskRunnerInfo, ITaskRunnerNode node, TaskRunnerBindEvent bindEvent)
+		{
+			try {
+				taskRunnerInfo.ToggleBinding (bindEvent, node);
+			} catch (Exception ex) {
+				LoggingService.LogError ("Toggle binding failed.", ex);
+				MessageService.ShowError (GettextCatalog.GetString ("Unable to change binding."), ex);
 			}
 		}
 	}

@@ -12,7 +12,23 @@
 			<Command
 				id="MonoDevelop.TaskRunner.TaskRunnerCommands.RunTask"
 				_description="Runs the task"
-				_label="Run" />
+				_label="_Run" />
+			<Command
+				id="MonoDevelop.TaskRunner.TaskRunnerCommands.ToggleBeforeBuildBinding"
+				_description="Enables or disables the task being run before a build"
+				_label="_Before Build" />
+			<Command
+				id="MonoDevelop.TaskRunner.TaskRunnerCommands.ToggleAfterBuildBinding"
+				_description="Enables or disables the task being run after a build"
+				_label="_After Build" />
+			<Command
+				id="MonoDevelop.TaskRunner.TaskRunnerCommands.ToggleCleanBinding"
+				_description="Enables or disables the task being run when a clean build is run"
+				_label="_Clean Build" />
+			<Command
+				id="MonoDevelop.TaskRunner.TaskRunnerCommands.ToggleProjectOpenBinding"
+				_description="Enables or disables the task run when a project is opened"
+				_label="Project _Open" />
 		</Category>
 	</Extension>
 
@@ -23,6 +39,12 @@
 
 	<Extension path="/MonoDevelop/TaskRunnerExplorerPad/TaskContextMenu">
 		<CommandItem id="MonoDevelop.TaskRunner.TaskRunnerCommands.RunTask" />
+		<ItemSet id="Bindings" _label="_Bindings">
+			<CommandItem id="MonoDevelop.TaskRunner.TaskRunnerCommands.ToggleBeforeBuildBinding" />
+			<CommandItem id="MonoDevelop.TaskRunner.TaskRunnerCommands.ToggleAfterBuildBinding" />
+			<CommandItem id="MonoDevelop.TaskRunner.TaskRunnerCommands.ToggleCleanBinding" />
+			<CommandItem id="MonoDevelop.TaskRunner.TaskRunnerCommands.ToggleProjectOpenBinding" />
+		</ItemSet>
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/Pads">

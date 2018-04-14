@@ -49,7 +49,9 @@ namespace MonoDevelop.TaskRunner.Gui
 			tasksTreeView.RowActivated += TasksTreeViewRowActivated;
 		}
 
-		public Action<ITaskRunnerNode> OnRunTask = _ => { };
+		public Action<ITaskRunnerNode> OnRunTask = node => { };
+		public Action<TaskRunnerInformation, ITaskRunnerNode, TaskRunnerBindEvent> OnToggleBinding =
+			(info, node, bindEvent) => { };
 
 		public void ClearTasks ()
 		{
@@ -183,6 +185,69 @@ namespace MonoDevelop.TaskRunner.Gui
 				backend.SetBuffer (buffer);
 			}
 			buffer.EmitText (text + Environment.NewLine, RichTextInlineStyle.Normal);
+		}
+
+		[CommandUpdateHandler (TaskRunnerCommands.ToggleAfterBuildBinding)]
+		void OnUpdateToggleAfterBuildBinding (CommandInfo info)
+		{
+			OnUpdateToggleBinding (info, TaskRunnerBindEvent.AfterBuild);
+		}
+
+		[CommandUpdateHandler (TaskRunnerCommands.ToggleBeforeBuildBinding)]
+		void OnUpdateToggleBeforeBuildBinding (CommandInfo info)
+		{
+			OnUpdateToggleBinding (info, TaskRunnerBindEvent.BeforeBuild);
+		}
+
+		[CommandUpdateHandler (TaskRunnerCommands.ToggleCleanBinding)]
+		void OnUpdateToggleCleanBinding (CommandInfo info)
+		{
+			OnUpdateToggleBinding (info, TaskRunnerBindEvent.Clean);
+		}
+
+		[CommandUpdateHandler (TaskRunnerCommands.ToggleProjectOpenBinding)]
+		void OnUpdateToggleProjectOpenBinding (CommandInfo info)
+		{
+			OnUpdateToggleBinding (info, TaskRunnerBindEvent.ProjectOpened);
+		}
+
+		void OnUpdateToggleBinding (CommandInfo info, TaskRunnerBindEvent bindEvent)
+		{
+			info.Enabled = CanRunSelectedTask ();
+			if (info.Enabled) {
+				info.Checked = selectedTaskRunnerNode.IsBindingEnabled (bindEvent);
+			}
+		}
+
+		[CommandHandler (TaskRunnerCommands.ToggleAfterBuildBinding)]
+		void ToggleAfterBuildBinding ()
+		{
+			ToggleBinding (TaskRunnerBindEvent.AfterBuild);
+		}
+
+		[CommandHandler (TaskRunnerCommands.ToggleBeforeBuildBinding)]
+		void ToggleBeforeBuildBinding ()
+		{
+			ToggleBinding (TaskRunnerBindEvent.BeforeBuild);
+		}
+
+		[CommandHandler (TaskRunnerCommands.ToggleCleanBinding)]
+		void ToggleCleanBinding ()
+		{
+			ToggleBinding (TaskRunnerBindEvent.Clean);
+		}
+
+		[CommandHandler (TaskRunnerCommands.ToggleProjectOpenBinding)]
+		void ToggleProjectOpenBinding ()
+		{
+			ToggleBinding (TaskRunnerBindEvent.ProjectOpened);
+		}
+
+		void ToggleBinding (TaskRunnerBindEvent bindEvent)
+		{
+			if (CanRunSelectedTask ()) {
+				OnToggleBinding (selectedTaskRunnerNode.TaskInfo, selectedTaskRunnerNode.TaskRunner, bindEvent);
+			}
 		}
 	}
 }
