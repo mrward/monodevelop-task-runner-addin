@@ -58,6 +58,7 @@ namespace MonoDevelop.TestTaskRunner
 
 				if (sb.Length == 0) {
 					//ProjectHelpers.DeleteFileFromProject (bindingPath);
+					File.Delete (bindingPath);
 				} else {
 					File.WriteAllText(bindingPath, sb.ToString(), Encoding.UTF8);
 					//ProjectHelpers.AddNestedFile (configPath, bindingPath);
