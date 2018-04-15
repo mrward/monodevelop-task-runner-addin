@@ -108,7 +108,9 @@ namespace MonoDevelop.TaskRunner
 
 			foreach (TaskRunnerBindingInformation binding in bindings) {
 				string tasks = string.Join (",", binding.GetTasks ());
-				bindingsElement.SetAttributeValue (binding.BindEvent.ToString (), tasks);
+				if (!string.IsNullOrEmpty (tasks)) {
+					bindingsElement.SetAttributeValue (binding.BindEvent.ToString (), tasks);
+				}
 			}
 
 			return bindingsElement.ToString ();
