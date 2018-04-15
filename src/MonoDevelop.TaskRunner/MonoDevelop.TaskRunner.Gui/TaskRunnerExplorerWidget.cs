@@ -31,6 +31,7 @@ using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Commands;
 using Xwt;
 using Xwt.Backends;
 
@@ -48,6 +49,8 @@ namespace MonoDevelop.TaskRunner.Gui
 
 			tasksTreeView.ButtonPressed += TasksTreeViewButtonPressed;
 			tasksTreeView.RowActivated += TasksTreeViewRowActivated;
+
+			bindingsTreeView.ButtonPressed += BindingsTreeViewButtonPressed;
 		}
 
 		public Action<ITaskRunnerNode> OnRunTask = node => { };
@@ -137,7 +140,7 @@ namespace MonoDevelop.TaskRunner.Gui
 
 		void AddBindingNodes (TaskRunnerInformation task, TaskRunnerBindingInformation binding)
 		{
-			TaskBindingTreeNode parentNode = GetBindingTreeNode (binding);
+			TaskBindingTreeNode parentNode = GetBindingTreeNode (binding.BindEvent);
 			if (parentNode == null)
 				return;
 
@@ -165,9 +168,9 @@ namespace MonoDevelop.TaskRunner.Gui
 			return navigator;
 		}
 
-		TaskBindingTreeNode GetBindingTreeNode (TaskRunnerBindingInformation binding)
+		TaskBindingTreeNode GetBindingTreeNode (TaskRunnerBindEvent bindEvent)
 		{
-			switch (binding.BindEvent) {
+			switch (bindEvent) {
 				case TaskRunnerBindEvent.AfterBuild:
 					return afterBuildBindingNode;
 				case TaskRunnerBindEvent.BeforeBuild:
@@ -197,6 +200,7 @@ namespace MonoDevelop.TaskRunner.Gui
 			}
 
 			if (node.IsRootNode) {
+				node.RefreshName ();
 				navigator.SetValue (bindingNodeNameField, node.Name);
 			}
 		}
@@ -350,6 +354,77 @@ namespace MonoDevelop.TaskRunner.Gui
 		{
 			bindingsTreeStore.Clear ();
 			AddBindingsTreeNodes ();
+		}
+
+		void BindingsTreeViewButtonPressed (object sender, ButtonEventArgs e)
+		{
+			if (!e.IsContextMenuTrigger)
+				return;
+
+			var selectedBindingRunnerNode = GetBindingTreeNode (e.Position);
+			if (selectedBindingRunnerNode == null)
+				return;
+
+			if (!selectedBindingRunnerNode.IsTaskNameNode)
+				return;
+
+			var commands = IdeApp.CommandService.CreateCommandEntrySet ("/MonoDevelop/TaskRunnerExplorerPad/BindingContextMenu");
+			IdeApp.CommandService.ShowContextMenu (bindingsTreeView.ToGtkWidget (), (int)e.X, (int)e.Y, commands, this);
+		}
+
+		TaskBindingTreeNode GetBindingTreeNode (TreePosition position)
+		{
+			if (position == null)
+				return null;
+
+			TreeNavigator navigator = bindingsTreeStore.GetNavigatorAt (position);
+			if (navigator == null)
+				return null;
+
+			return navigator.GetValue (bindingNodeField);
+		}
+
+		TaskBindingTreeNode GetBindingTreeNode (Point position)
+		{
+			TreePosition treePosition = bindingsTreeView.GetRowAtPosition (position);
+			return GetBindingTreeNode (treePosition);
+		}
+
+		[CommandUpdateHandler (EditCommands.Delete)]
+		void OnUpdateDeleteCommand (CommandInfo info)
+		{
+			info.Text = GettextCatalog.GetString ("Remove");
+		}
+
+		[CommandHandler (EditCommands.Delete)]
+		void RemoveBinding ()
+		{
+			TreeNavigator navigator = bindingsTreeStore.GetNavigatorAt (bindingsTreeView.SelectedRow);
+			if (navigator == null) {
+				return;
+			}
+
+			TaskBindingTreeNode bindingNode = navigator.GetValue (bindingNodeField);
+			if (bindingNode == null) {
+				return;
+			}
+
+			bindingNode.RemoveBinding ();
+			navigator.Remove ();
+
+			TaskBindingTreeNode parentNode = GetBindingTreeNode (bindingNode.BindEvent);
+			if (parentNode == null) {
+				return;
+			}
+
+			navigator = GetNavigator (parentNode);
+			if (navigator != null) {
+				parentNode.RefreshName ();
+				navigator.SetValue (bindingNodeNameField, parentNode.Name);
+				if (!parentNode.AnyBindings ()) {
+					navigator.RemoveChildren ();
+				}
+			}
 		}
 	}
 }

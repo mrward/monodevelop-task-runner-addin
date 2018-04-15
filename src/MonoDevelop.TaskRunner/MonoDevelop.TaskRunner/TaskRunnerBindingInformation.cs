@@ -72,7 +72,12 @@ namespace MonoDevelop.TaskRunner
 
 		static bool IsMatch (ITaskRunnerNode task, string name)
 		{
-			return StringComparer.CurrentCultureIgnoreCase.Equals (name, task.Name);
+			return IsMatch (name, task.Name);
+		}
+
+		static bool IsMatch (string name1, string name2)
+		{
+			return StringComparer.CurrentCultureIgnoreCase.Equals (name1, name2);
 		}
 
 		public void ToggleTask (ITaskRunnerNode task)
@@ -88,6 +93,15 @@ namespace MonoDevelop.TaskRunner
 		public bool AnyTasks ()
 		{
 			return taskNames.Any ();
+		}
+
+		public bool RemoveTask (string task)
+		{
+			int count = taskNames.Count;
+
+			taskNames.RemoveAll (name => IsMatch (task, name));
+
+			return count != taskNames.Count;
 		}
 	}
 }

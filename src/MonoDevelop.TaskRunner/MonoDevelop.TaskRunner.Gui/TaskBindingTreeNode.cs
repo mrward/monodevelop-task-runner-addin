@@ -24,8 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.VisualStudio.TaskRunnerExplorer;
 using MonoDevelop.Core;
 
@@ -35,14 +35,16 @@ namespace MonoDevelop.TaskRunner.Gui
 	{
 		TaskRunnerInformation task;
 		TaskRunnerBindingInformation binding;
-		int bindingsCount = 0;
 		bool hasChildren;
+		HashSet<TaskRunnerInformation> tasks;
 
 		public TaskBindingTreeNode (TaskRunnerBindEvent bindEvent)
 		{
 			BindEvent = bindEvent;
 			RefreshName ();
 			IsRootNode = true;
+
+			tasks = new HashSet<TaskRunnerInformation> ();
 		}
 
 		TaskBindingTreeNode (TaskRunnerInformation task, TaskRunnerBindingInformation binding)
@@ -50,6 +52,7 @@ namespace MonoDevelop.TaskRunner.Gui
 			this.task = task;
 			this.binding = binding;
 
+			BindEvent = binding.BindEvent;
 			Name = task.Name;
 			hasChildren = true;
 		}
@@ -59,16 +62,33 @@ namespace MonoDevelop.TaskRunner.Gui
 			this.task = task;
 			this.binding = binding;
 
+			BindEvent = binding.BindEvent;
 			Name = taskName;
 			hasChildren = false;
+			IsTaskNameNode = true;
 		}
 
-		void RefreshName ()
+		public void RefreshName ()
 		{
-			Name = GetName ();
+			int bindingsCount = GetBindingsCount ();
+			Name = GetName (bindingsCount);
 		}
 
-		string GetName ()
+		int GetBindingsCount ()
+		{
+			if (tasks == null) {
+				return 0;
+			}
+
+			int bindingsCount = 0;
+			foreach (TaskRunnerInformation currentTask in tasks) {
+				bindingsCount += currentTask.Bindings.Count (BindEvent);
+			}
+
+			return bindingsCount;
+		}
+
+		string GetName (int bindingsCount = 0)
 		{
 			return GetNamePrefix ().ToBoldMarkup () + $" ({bindingsCount})";
 		}
@@ -92,20 +112,34 @@ namespace MonoDevelop.TaskRunner.Gui
 		public TaskRunnerBindEvent BindEvent { get; private set; }
 		public string Name { get; private set; }
 		public bool IsRootNode { get; private set; }
+		public bool IsTaskNameNode { get; private set; }
 
 		public IEnumerable<TaskBindingTreeNode> CreateChildNodes (
 			TaskRunnerInformation task,
 			TaskRunnerBindingInformation binding)
 		{
 			if (IsRootNode) {
-				bindingsCount += binding.GetTasks ().Count ();
-				RefreshName ();
+				tasks.Add (task);
 				yield return new TaskBindingTreeNode (task, binding);
 			} else if (hasChildren) {
 				foreach (string taskName in binding.GetTasks ()) {
 					yield return new TaskBindingTreeNode (task, binding, taskName);
 				}
 			}
+		}
+
+		public bool RemoveBinding ()
+		{
+			if (!IsTaskNameNode) {
+				return false;
+			}
+
+			return task.RemoveBinding (binding.BindEvent, Name);
+		}
+
+		public bool AnyBindings ()
+		{
+			return GetBindingsCount () > 0;
 		}
 	}
 }

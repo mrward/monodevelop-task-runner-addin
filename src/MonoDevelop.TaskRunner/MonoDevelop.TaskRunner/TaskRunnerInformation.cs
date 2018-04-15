@@ -66,5 +66,10 @@ namespace MonoDevelop.TaskRunner
 		{
 			Bindings.ToggleBinding (bindEvent, taskRunnerNode);
 		}
+
+		public bool RemoveBinding (TaskRunnerBindEvent bindEvent, string name)
+		{
+			return Bindings.RemoveBinding (bindEvent, name);
+		}
 	}
 }

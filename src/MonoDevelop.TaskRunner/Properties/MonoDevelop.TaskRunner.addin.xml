@@ -47,6 +47,15 @@
 		</ItemSet>
 	</Extension>
 
+	<ExtensionPoint path="/MonoDevelop/TaskRunnerExplorerPad/BindingContextMenu" name="Task Runner Explorer bindings tree view context menu">
+		<Description>Task Runner Explorer context menu for the bindings tree view.</Description>
+		<ExtensionNodeSet id="MonoDevelop.Components.Commands.ItemSet" />
+	</ExtensionPoint>
+
+	<Extension path="/MonoDevelop/TaskRunnerExplorerPad/BindingContextMenu">
+		<CommandItem id="MonoDevelop.Ide.Commands.EditCommands.Delete" />
+	</Extension>
+
 	<Extension path="/MonoDevelop/Ide/Pads">
 		<Pad
 			id="MonoDevelop.TaskRunner.TaskRunnerExplorerPad"

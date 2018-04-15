@@ -26,7 +26,7 @@
 
 namespace MonoDevelop.TaskRunner
 {
-	public enum TaskRunnerCommands
+	enum TaskRunnerCommands
 	{
 		RunTask,
 		ToggleAfterBuildBinding,

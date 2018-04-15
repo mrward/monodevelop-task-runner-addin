@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -121,6 +122,33 @@ namespace MonoDevelop.TaskRunner
 		IEnumerator IEnumerable.GetEnumerator ()
 		{
 			return bindings.GetEnumerator ();
+		}
+
+		public bool RemoveBinding (TaskRunnerBindEvent bindEvent, string name)
+		{
+			if (config == null) {
+				return false;
+			}
+
+			TaskRunnerBindingInformation binding = FindBinding (bindEvent);
+			if (binding != null) {
+				if (binding.RemoveTask (name)) {
+					config.SaveBindings (configFile, ToXml ());
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		public int Count (TaskRunnerBindEvent bindEvent)
+		{
+			TaskRunnerBindingInformation binding = FindBinding (bindEvent);
+			if (binding != null) {
+				return binding.GetTasks ().Count ();
+			}
+
+			return 0;
 		}
 	}
 }
