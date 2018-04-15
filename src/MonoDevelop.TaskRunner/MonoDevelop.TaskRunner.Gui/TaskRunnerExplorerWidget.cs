@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.TaskRunnerExplorer;
 using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
+using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using Xwt;
 using Xwt.Backends;
@@ -63,6 +64,7 @@ namespace MonoDevelop.TaskRunner.Gui
 		public void AddTasks (IEnumerable<GroupedTaskRunnerInformation> tasks)
 		{
 			ClearTasks ();
+			ClearBindings ();
 
 			foreach (var task in tasks) {
 				projectsComboBox.Items.Add (task, task.Name);
@@ -74,6 +76,7 @@ namespace MonoDevelop.TaskRunner.Gui
 		void ProjectComboBoxSelectionChanged (object sender, EventArgs e)
 		{
 			tasksTreeStore.Clear ();
+			ClearBindings ();
 
 			var groupedTaskRunner = projectsComboBox.SelectedItem as GroupedTaskRunnerInformation;
 			if (groupedTaskRunner == null) {
@@ -81,16 +84,121 @@ namespace MonoDevelop.TaskRunner.Gui
 			}
 
 			foreach (var task in groupedTaskRunner.Tasks) {
-				var rootNode = new TaskRunnerTreeNode (task);
-
-				TreeNavigator navigator = tasksTreeStore.AddNode ();
-				navigator.SetValue (taskRunnerNodeNameField, rootNode.Name);
-				navigator.SetValue (taskRunnerField, rootNode);
-
-				AddChildNodes (navigator, rootNode);
+				AddTaskNodes (task);
+				AddBindingNodes(task);
 			}
 
 			tasksTreeView.ExpandAll ();
+		}
+
+		void AddTaskNodes (TaskRunnerInformation task)
+		{
+			var rootNode = new TaskRunnerTreeNode (task);
+
+			TreeNavigator navigator = tasksTreeStore.AddNode ();
+			navigator.SetValue (taskRunnerNodeNameField, rootNode.Name);
+			navigator.SetValue (taskRunnerField, rootNode);
+
+			AddTaskChildNodes (navigator, rootNode);
+		}
+
+		void AddTaskChildNodes (TreeNavigator navigator, TaskRunnerTreeNode node)
+		{
+			foreach (TaskRunnerTreeNode childNode in node.GetChildNodes ()) {
+				TreeNavigator childNavigator = navigator.AddChild ();
+				childNavigator.SetValue (taskRunnerNodeNameField, childNode.Name);
+				childNavigator.SetValue (taskRunnerField, childNode);
+
+				AddTaskChildNodes (childNavigator, childNode);
+				navigator.MoveToParent ();
+			}
+		}
+
+		void AddBindingNodes (TaskRunnerInformation task)
+		{
+			foreach (TaskRunnerBindingInformation binding in task.Bindings) {
+				AddBindingNodes (task, binding);
+			}
+		}
+
+		public void RefreshBindings ()
+		{
+			ClearBindings ();
+
+			var groupedTaskRunner = projectsComboBox.SelectedItem as GroupedTaskRunnerInformation;
+			if (groupedTaskRunner == null) {
+				return;
+			}
+
+			foreach (var task in groupedTaskRunner.Tasks) {
+				AddBindingNodes(task);
+			}
+		}
+
+		void AddBindingNodes (TaskRunnerInformation task, TaskRunnerBindingInformation binding)
+		{
+			TaskBindingTreeNode parentNode = GetBindingTreeNode (binding);
+			if (parentNode == null)
+				return;
+
+			TreeNavigator navigator = GetNavigator (parentNode);
+			if (navigator == null)
+				return;
+
+			AddBindingChildNodes (task, binding, navigator, parentNode);
+		}
+
+		TreeNavigator GetNavigator (TaskBindingTreeNode node)
+		{
+			TreeNavigator navigator = bindingsTreeStore.GetFirstNode ();
+			TaskBindingTreeNode currentNode = navigator.GetValue (bindingNodeField);
+
+			while (currentNode != node) {
+				if (navigator.MoveNext ()) {
+					currentNode = navigator.GetValue (bindingNodeField);
+				} else {
+					LoggingService.LogError ("Unable to find TreeNavigator for binding tree node {0}", node.Name);
+					return null;
+				}
+			}
+
+			return navigator;
+		}
+
+		TaskBindingTreeNode GetBindingTreeNode (TaskRunnerBindingInformation binding)
+		{
+			switch (binding.BindEvent) {
+				case TaskRunnerBindEvent.AfterBuild:
+					return afterBuildBindingNode;
+				case TaskRunnerBindEvent.BeforeBuild:
+					return beforeBuildBindingNode;
+				case TaskRunnerBindEvent.Clean:
+					return cleanBindingNode;
+				case TaskRunnerBindEvent.ProjectOpened:
+					return projectOpenBindingNode;
+				default:
+					return null;
+			}
+		}
+
+		void AddBindingChildNodes (
+			TaskRunnerInformation task,
+			TaskRunnerBindingInformation binding,
+			TreeNavigator navigator,
+			TaskBindingTreeNode node)
+		{
+			foreach (TaskBindingTreeNode childNode in node.CreateChildNodes (task, binding)) {
+				TreeNavigator childNavigator = navigator.AddChild ();
+				childNavigator.SetValue (bindingNodeNameField, childNode.Name);
+				childNavigator.SetValue (bindingNodeField, childNode);
+
+				AddBindingChildNodes (task, binding, childNavigator, childNode);
+				navigator.MoveToParent ();
+			}
+
+			if (node.IsRootNode) {
+				navigator.SetValue (bindingNodeNameField, node.Name);
+			}
 		}
 
 		public void OpenTaskOutputTab (string name)
@@ -106,18 +214,6 @@ namespace MonoDevelop.TaskRunner.Gui
 
 			taskOutputTab.Label = name;
 			notebook.CurrentTab = taskOutputTab;
-		}
-
-		void AddChildNodes (TreeNavigator navigator, TaskRunnerTreeNode node)
-		{
-			foreach (var childNode in node.GetChildNodes ()) {
-				TreeNavigator childNavigator = navigator.AddChild ();
-				childNavigator.SetValue (taskRunnerNodeNameField, childNode.Name);
-				childNavigator.SetValue (taskRunnerField, childNode);
-
-				AddChildNodes (childNavigator, childNode);
-				navigator.MoveToParent ();
-			}
 		}
 
 		void TasksTreeViewRowActivated (object sender, TreeViewRowEventArgs e)
@@ -248,6 +344,12 @@ namespace MonoDevelop.TaskRunner.Gui
 			if (CanRunSelectedTask ()) {
 				OnToggleBinding (selectedTaskRunnerNode.TaskInfo, selectedTaskRunnerNode.TaskRunner, bindEvent);
 			}
+		}
+
+		void ClearBindings ()
+		{
+			bindingsTreeStore.Clear ();
+			AddBindingsTreeNodes ();
 		}
 	}
 }

@@ -24,12 +24,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Xml.Linq;
 using Microsoft.VisualStudio.TaskRunnerExplorer;
 using MonoDevelop.Core;
-using System;
-using System.Collections.Generic;
-using System.Xml.Linq;
-using System.Linq;
 
 namespace MonoDevelop.TaskRunner
 {
@@ -37,7 +37,7 @@ namespace MonoDevelop.TaskRunner
 	// Bindings:
 	// <binding ProjectOpen="task1, task2" AfterBuild="task3" />
 	//
-	class TaskRunnerBindings
+	class TaskRunnerBindings : IEnumerable<TaskRunnerBindingInformation>
 	{
 		ITaskRunnerConfig config;
 		FilePath configFile;
@@ -111,6 +111,16 @@ namespace MonoDevelop.TaskRunner
 			}
 
 			return bindingsElement.ToString ();
+		}
+
+		public IEnumerator<TaskRunnerBindingInformation> GetEnumerator ()
+		{
+			return bindings.GetEnumerator ();
+		}
+
+		IEnumerator IEnumerable.GetEnumerator ()
+		{
+			return bindings.GetEnumerator ();
 		}
 	}
 }

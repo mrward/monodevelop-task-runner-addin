@@ -24,11 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using Microsoft.VisualStudio.TaskRunnerExplorer;
 using MonoDevelop.Core;
 using Xwt;
-using MonoDevelop.Ide;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.TaskRunner.Gui
 {
@@ -105,15 +103,15 @@ namespace MonoDevelop.TaskRunner.Gui
 
 		void AddBindingsTreeNodes ()
 		{
-			beforeBuildBindingNode = AddBindingsTreeNode (GettextCatalog.GetString ("Before Build"));
-			afterBuildBindingNode = AddBindingsTreeNode (GettextCatalog.GetString ("After Build"));
-			cleanBindingNode = AddBindingsTreeNode (GettextCatalog.GetString ("Clean"));
-			projectOpenBindingNode = AddBindingsTreeNode (GettextCatalog.GetString ("Project Open"));
+			beforeBuildBindingNode = AddBindingsTreeNode (TaskRunnerBindEvent.BeforeBuild);
+			afterBuildBindingNode = AddBindingsTreeNode (TaskRunnerBindEvent.AfterBuild);
+			cleanBindingNode = AddBindingsTreeNode (TaskRunnerBindEvent.Clean);
+			projectOpenBindingNode = AddBindingsTreeNode (TaskRunnerBindEvent.ProjectOpened);
 		}
 
-		TaskBindingTreeNode AddBindingsTreeNode (string name)
+		TaskBindingTreeNode AddBindingsTreeNode (TaskRunnerBindEvent bindEvent)
 		{
-			var node = new TaskBindingTreeNode (name);
+			var node = new TaskBindingTreeNode (bindEvent);
 
 			TreeNavigator navigator = bindingsTreeStore.AddNode ();
 			navigator.SetValue (bindingNodeNameField, node.Name);
