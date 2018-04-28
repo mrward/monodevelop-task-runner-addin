@@ -152,5 +152,10 @@ namespace MonoDevelop.TaskRunner
 
 			return 0;
 		}
+
+		public void Save ()
+		{
+			config.SaveBindings (configFile, ToXml ());
+		}
 	}
 }

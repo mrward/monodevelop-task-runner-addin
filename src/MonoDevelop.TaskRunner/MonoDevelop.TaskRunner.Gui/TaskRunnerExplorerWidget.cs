@@ -426,5 +426,64 @@ namespace MonoDevelop.TaskRunner.Gui
 				}
 			}
 		}
+
+		[CommandUpdateHandler (TaskRunnerCommands.MoveBindingUp)]
+		void UpdateMoveBindingUp (CommandInfo info)
+		{
+			TaskBindingTreeNode bindingNode = GetSelectedBindingNode ();
+			info.Enabled = bindingNode?.CanMoveUp () == true;
+		}
+
+		TaskBindingTreeNode GetSelectedBindingNode ()
+		{
+			TreeNavigator navigator = bindingsTreeStore.GetNavigatorAt (bindingsTreeView.SelectedRow);
+			if (navigator != null) {
+				return navigator.GetValue (bindingNodeField);
+			}
+			return null;
+		}
+
+		[CommandUpdateHandler (TaskRunnerCommands.MoveBindingDown)]
+		void UpdateMoveBindingDown (CommandInfo info)
+		{
+			TaskBindingTreeNode bindingNode = GetSelectedBindingNode ();
+			info.Enabled = bindingNode?.CanMoveDown () == true;
+		}
+
+		[CommandHandler (TaskRunnerCommands.MoveBindingUp)]
+		void MoveBindingUp ()
+		{
+			TaskBindingTreeNode bindingNode = GetSelectedBindingNode ();
+			if (bindingNode?.MoveUp () == true) {
+				TreeNavigator navigator = bindingsTreeStore.GetNavigatorAt (bindingsTreeView.SelectedRow);
+				navigator.MovePrevious ();
+
+				TaskBindingTreeNode otherBindingNode = navigator.GetValue (bindingNodeField);
+				navigator.SetValue (bindingNodeNameField, bindingNode.Name);
+				navigator.SetValue (bindingNodeField, bindingNode);
+
+				navigator.MoveNext ();
+				navigator.SetValue (bindingNodeNameField, otherBindingNode.Name);
+				navigator.SetValue (bindingNodeField, otherBindingNode);
+			}
+		}
+
+		[CommandHandler (TaskRunnerCommands.MoveBindingDown)]
+		void MoveBindingDown ()
+		{
+			TaskBindingTreeNode bindingNode = GetSelectedBindingNode ();
+			if (bindingNode?.MoveDown () == true) {
+				TreeNavigator navigator = bindingsTreeStore.GetNavigatorAt (bindingsTreeView.SelectedRow);
+				navigator.MoveNext ();
+
+				TaskBindingTreeNode otherBindingNode = navigator.GetValue (bindingNodeField);
+				navigator.SetValue (bindingNodeNameField, bindingNode.Name);
+				navigator.SetValue (bindingNodeField, bindingNode);
+
+				navigator.MovePrevious ();
+				navigator.SetValue (bindingNodeNameField, otherBindingNode.Name);
+				navigator.SetValue (bindingNodeField, otherBindingNode);
+			}
+		}
 	}
 }

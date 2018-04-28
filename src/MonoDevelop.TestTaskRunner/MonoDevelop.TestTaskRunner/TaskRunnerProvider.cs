@@ -58,6 +58,11 @@ namespace MonoDevelop.TestTaskRunner
 				Command = new TaskRunnerCommand (cwd, "bash", "-c \"echo Task 2\"")
 			});
 
+			root.Children.Add (new TaskRunnerNode ("Task 3", true) {
+				Description = "Executes Task 3.",
+				Command = new TaskRunnerCommand (cwd, "bash", "-c \"echo Task 3\"")
+			});
+
 			return root;
 		}
 	}

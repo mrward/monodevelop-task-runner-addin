@@ -141,5 +141,51 @@ namespace MonoDevelop.TaskRunner.Gui
 		{
 			return GetBindingsCount () > 0;
 		}
+
+		public bool CanMoveDown ()
+		{
+			if (!IsTaskNameNode) {
+				return false;
+			}
+
+			return binding.CanMoveTaskDown (Name);
+		}
+
+		public bool CanMoveUp ()
+		{
+			if (!IsTaskNameNode) {
+				return false;
+			}
+
+			return binding.CanMoveTaskUp (Name);
+		}
+
+		public bool MoveUp ()
+		{
+			if (!IsTaskNameNode) {
+				return false;
+			}
+
+			if (binding.MoveTaskUp (Name)) {
+				task.SaveBindings ();
+				return true;
+			}
+
+			return false;
+		}
+
+		public bool MoveDown ()
+		{
+			if (!IsTaskNameNode) {
+				return false;
+			}
+
+			if (binding.MoveTaskDown (Name)) {
+				task.SaveBindings ();
+				return true;
+			}
+
+			return false;
+		}
 	}
 }

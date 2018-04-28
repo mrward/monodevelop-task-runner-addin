@@ -71,5 +71,10 @@ namespace MonoDevelop.TaskRunner
 		{
 			return Bindings.RemoveBinding (bindEvent, name);
 		}
+
+		public void SaveBindings ()
+		{
+			Bindings.Save ();
+		}
 	}
 }

@@ -32,6 +32,8 @@ namespace MonoDevelop.TaskRunner
 		ToggleAfterBuildBinding,
 		ToggleBeforeBuildBinding,
 		ToggleCleanBinding,
-		ToggleProjectOpenBinding
+		ToggleProjectOpenBinding,
+		MoveBindingUp,
+		MoveBindingDown
 	}
 }

@@ -103,5 +103,45 @@ namespace MonoDevelop.TaskRunner
 
 			return count != taskNames.Count;
 		}
+
+		public bool CanMoveTaskDown (string task)
+		{
+			int index = taskNames.IndexOf (task);
+			return index < taskNames.Count - 1;
+		}
+
+		public bool CanMoveTaskUp (string task)
+		{
+			int index = taskNames.IndexOf (task);
+			return index > 0;
+		}
+
+		public bool MoveTaskUp (string task)
+		{
+			int index = taskNames.IndexOf (task);
+			if (index <= 0) {
+				return false;
+			}
+
+			string otherTask = taskNames [index - 1];
+			taskNames [index] = otherTask;
+			taskNames [index - 1] = task;
+
+			return true;
+		}
+
+		public bool MoveTaskDown (string task)
+		{
+			int index = taskNames.IndexOf (task);
+			if (index >= taskNames.Count - 1) {
+				return false;
+			}
+
+			string otherTask = taskNames [index + 1];
+			taskNames [index] = otherTask;
+			taskNames [index + 1] = task;
+
+			return true;
+		}
 	}
 }

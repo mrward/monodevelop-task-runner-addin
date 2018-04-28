@@ -29,6 +29,16 @@
 				id="MonoDevelop.TaskRunner.TaskRunnerCommands.ToggleProjectOpenBinding"
 				_description="Enables or disables the task run when a project is opened"
 				_label="Project _Open" />
+			<Command
+				id="MonoDevelop.TaskRunner.TaskRunnerCommands.MoveBindingUp"
+				_description="Move the selected binding before the previous one"
+				icon="gtk-go-up"
+				_label="Move _Up" />
+			<Command
+				id="MonoDevelop.TaskRunner.TaskRunnerCommands.MoveBindingDown"
+				_description="Move the selected binding after the next one"
+				icon="gtk-go-down"
+				_label="Move _Down" />
 		</Category>
 	</Extension>
 
@@ -53,6 +63,8 @@
 	</ExtensionPoint>
 
 	<Extension path="/MonoDevelop/TaskRunnerExplorerPad/BindingContextMenu">
+		<CommandItem id="MonoDevelop.TaskRunner.TaskRunnerCommands.MoveBindingUp" />
+		<CommandItem id="MonoDevelop.TaskRunner.TaskRunnerCommands.MoveBindingDown" />
 		<CommandItem id="MonoDevelop.Ide.Commands.EditCommands.Delete" />
 	</Extension>
 
