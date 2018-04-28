@@ -122,7 +122,10 @@ namespace MonoDevelop.TaskRunner
 
 		void RemoveTasks (Solution solution)
 		{
-			
+			// Should really be removing tasks for the solution only and
+			// handling projects that are still open in another solution.
+			// For now just refresh the tasks.
+			Refresh ();
 		}
 	}
 }
