@@ -30,16 +30,18 @@ using Microsoft.VisualStudio.TaskRunnerExplorer;
 using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Commands;
+using MonoDevelop.Ide.Gui.Components;
 using Xwt;
-using Xwt.Backends;
 
 namespace MonoDevelop.TaskRunner.Gui
 {
 	partial class TaskRunnerExplorerWidget
 	{
 		TaskRunnerTreeNode selectedTaskRunnerNode;
+		LogView logView;
 
 		public TaskRunnerExplorerWidget ()
 		{
@@ -205,14 +207,18 @@ namespace MonoDevelop.TaskRunner.Gui
 			}
 		}
 
+		public OutputProgressMonitor GetProgressMonitor ()
+		{
+			return logView.GetProgressMonitor ();
+		}
+
 		public void OpenTaskOutputTab (string name)
 		{
 			if (taskOutputTab == null) {
-				outputView = new RichTextView ();
-				var scrollView = new ScrollView ();
-				scrollView.HorizontalScrollPolicy = ScrollPolicy.Automatic;
-				scrollView.Content = outputView;
-				notebook.Add (scrollView, name);
+				logView = new LogView ();
+				logView.ShowAll ();
+				var logViewWidget = Toolkit.CurrentEngine.WrapWidget (logView, NativeWidgetSizing.DefaultPreferredSize);
+				notebook.Add (logViewWidget, name);
 				taskOutputTab = notebook.Tabs [notebook.Tabs.Count - 1];
 			}
 
@@ -274,17 +280,6 @@ namespace MonoDevelop.TaskRunner.Gui
 			if (CanRunSelectedTask ()) {
 				OnRunTask (selectedTaskRunnerNode.TaskRunner);
 			}
-		}
-
-		internal void WriteOutput (string text)
-		{
-			var backend = outputView.GetBackend () as IRichTextViewBackend;
-			IRichTextBuffer buffer = backend.CurrentBuffer;
-			if (buffer == null) {
-				buffer = backend.CreateBuffer ();
-				backend.SetBuffer (buffer);
-			}
-			buffer.EmitText (text + Environment.NewLine, RichTextInlineStyle.Normal);
 		}
 
 		[CommandUpdateHandler (TaskRunnerCommands.ToggleAfterBuildBinding)]

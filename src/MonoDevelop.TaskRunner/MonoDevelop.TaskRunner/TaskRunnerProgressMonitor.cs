@@ -24,11 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Core.Execution;
-using MonoDevelop.Core;
-using MonoDevelop.Ide;
-using MonoDevelop.Ide.Gui;
 using System.Text;
+using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.TaskRunner
 {
@@ -38,24 +35,14 @@ namespace MonoDevelop.TaskRunner
 		StringBuilder standardOutput = new StringBuilder ();
 		StringBuilder standardError = new StringBuilder ();
 
-		public TaskRunnerProgressMonitor ()
+		public TaskRunnerProgressMonitor (OutputProgressMonitor outputProgressMonitor)
 		{
-			outputProgressMonitor = CreateProgressMonitor ();
+			this.outputProgressMonitor = outputProgressMonitor;
 			AddFollowerMonitor (outputProgressMonitor);
 		}
 
 		public override OperationConsole Console {
 			get { return outputProgressMonitor.Console; }
-		}
-
-		OutputProgressMonitor CreateProgressMonitor ()
-		{
-			return IdeApp.Workbench.ProgressMonitors.GetOutputProgressMonitor (
-				GettextCatalog.GetString ("Task Runner Output"),
-				Stock.Console,
-				false,
-				true
-			);
 		}
 
 		protected override void OnWriteLog (string message)

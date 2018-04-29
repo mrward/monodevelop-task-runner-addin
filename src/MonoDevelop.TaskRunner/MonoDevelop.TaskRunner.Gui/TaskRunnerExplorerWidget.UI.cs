@@ -48,7 +48,6 @@ namespace MonoDevelop.TaskRunner.Gui
 		TaskBindingTreeNode projectOpenBindingNode;
 		Notebook notebook;
 		NotebookTab taskOutputTab;
-		RichTextView outputView;
 
 		void Build ()
 		{

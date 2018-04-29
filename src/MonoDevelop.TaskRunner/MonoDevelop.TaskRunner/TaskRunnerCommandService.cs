@@ -24,7 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TaskRunnerExplorer;
 using MonoDevelop.Core;
@@ -35,10 +34,16 @@ namespace MonoDevelop.TaskRunner
 	class TaskRunnerCommandService : ITaskRunnerCommandService
 	{
 		ProcessAsyncOperation currentOperation;
+		OutputProgressMonitor outputProgressMonitor;
+
+		public TaskRunnerCommandService (OutputProgressMonitor outputProgressMonitor)
+		{
+			this.outputProgressMonitor = outputProgressMonitor;
+		}
 
 		public async Task<ITaskRunnerCommandResult> ExecuteCommand (ITaskRunnerCommand command)
 		{
-			using (var monitor = new TaskRunnerProgressMonitor ()) {
+			using (var monitor = new TaskRunnerProgressMonitor (outputProgressMonitor)) {
 				monitor.Log.WriteLine (command.ToCommandLine ());
 
 				var result = Runtime.ProcessService.StartConsoleProcess (
@@ -52,6 +57,9 @@ namespace MonoDevelop.TaskRunner
 				await result.Task;
 
 				currentOperation = null;
+
+				string message = GettextCatalog.GetString ("Process terminated with code {0}", result.ExitCode);
+				monitor.Log.WriteLine (message);
 
 				return new TaskRunnerCommandResult {
 					StandardOutput = monitor.GetStandardOutputText (),

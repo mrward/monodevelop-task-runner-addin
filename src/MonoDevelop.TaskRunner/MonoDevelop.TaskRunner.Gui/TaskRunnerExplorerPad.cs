@@ -31,6 +31,7 @@ using Microsoft.VisualStudio.TaskRunnerExplorer;
 using MonoDevelop.Components;
 using MonoDevelop.Components.Docking;
 using MonoDevelop.Core;
+using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
 
@@ -99,15 +100,10 @@ namespace MonoDevelop.TaskRunner.Gui
 		{
 			widget.OpenTaskOutputTab (taskRunnerNode.Name);
 
-			widget.WriteOutput (taskRunnerNode.Command.ToCommandLine ());
+			OutputProgressMonitor progressMonitor = widget.GetProgressMonitor ();
 
-			var context = new TaskRunnerCommandContext ();
-			var result = await taskRunnerNode.Invoke (context);
-
-			if (result != null) {
-				string message = GettextCatalog.GetString ("Process terminated with code {0}{1}", result.ExitCode, Environment.NewLine);
-				widget.WriteOutput (message);
-			}
+			var context = new TaskRunnerCommandContext (progressMonitor);
+			await taskRunnerNode.Invoke (context);
 		}
 
 		void ToggleBinding (TaskRunnerInformation taskRunnerInfo, ITaskRunnerNode node, TaskRunnerBindEvent bindEvent)

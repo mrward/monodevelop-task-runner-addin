@@ -25,13 +25,19 @@
 // THE SOFTWARE.
 
 using Microsoft.VisualStudio.TaskRunnerExplorer;
+using MonoDevelop.Core.Execution;
 
 namespace MonoDevelop.TaskRunner
 {
 	class TaskRunnerCommandContext : ITaskRunnerCommandContext
 	{
 		TaskRunnerCommandContextLogger logger = new TaskRunnerCommandContextLogger ();
-		TaskRunnerCommandService executionService = new TaskRunnerCommandService ();
+		TaskRunnerCommandService executionService;
+
+		public TaskRunnerCommandContext (OutputProgressMonitor progressMonitor)
+		{
+			executionService = new TaskRunnerCommandService (progressMonitor);
+		}
 
 		public ITaskRunnerCommandService ExecutionService {
 			get { return executionService; }
