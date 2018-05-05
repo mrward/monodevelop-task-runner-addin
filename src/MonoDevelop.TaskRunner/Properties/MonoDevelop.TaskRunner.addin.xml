@@ -81,4 +81,8 @@
 	<Extension path="/MonoDevelop/Ide/StartupHandlers">
 		<Class class="MonoDevelop.TaskRunner.TaskRunnerStartupHandler" />
 	</Extension>
+
+	<Extension path="/MonoDevelop/ProjectModel/ProjectModelExtensions">
+		<Class class="MonoDevelop.TaskRunner.TaskRunnerProjectExtension" />
+	</Extension>
 </ExtensionModel>

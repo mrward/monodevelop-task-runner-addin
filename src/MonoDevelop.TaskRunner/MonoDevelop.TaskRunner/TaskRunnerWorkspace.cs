@@ -29,9 +29,11 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.VisualStudio.TaskRunnerExplorer;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
+using MonoDevelop.TaskRunner.Gui;
 
 namespace MonoDevelop.TaskRunner
 {
@@ -73,6 +75,11 @@ namespace MonoDevelop.TaskRunner
 			} catch (Exception ex) {
 				LoggingService.LogError ("TaskRunnerWorkspace SolutionLoaded error", ex);
 			}
+		}
+
+		public GroupedTaskRunnerInformation GetGroupedTask (Project project)
+		{
+			return groupedTasks.FirstOrDefault (task => task.WorkspaceFileObject == project);
 		}
 
 		public void Refresh ()
@@ -126,6 +133,14 @@ namespace MonoDevelop.TaskRunner
 			// handling projects that are still open in another solution.
 			// For now just refresh the tasks.
 			Refresh ();
+		}
+
+		public Task<ITaskRunnerCommandResult> RunTask (ITaskRunnerNode node)
+		{
+			return Runtime.RunInMainThread (() => {
+				TaskRunnerExplorerPad.Create ();
+				return TaskRunnerExplorerPad.Instance.RunTaskAsync (node);
+			});
 		}
 	}
 }

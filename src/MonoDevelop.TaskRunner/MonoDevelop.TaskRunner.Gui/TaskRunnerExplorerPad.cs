@@ -41,9 +41,11 @@ namespace MonoDevelop.TaskRunner.Gui
 	{
 		TaskRunnerExplorerWidget widget;
 		Button refreshButton;
+		static TaskRunnerExplorerPad instance;
 
 		public TaskRunnerExplorerPad ()
 		{
+			instance = this;
 			TaskRunnerServices.Workspace.TasksChanged += TasksChanged;
 		}
 
@@ -62,6 +64,10 @@ namespace MonoDevelop.TaskRunner.Gui
 				widget.AddTasks (TaskRunnerServices.Workspace.GroupedTasks);
 				return widget.ToGtkWidget ();
 			}
+		}
+
+		public static TaskRunnerExplorerPad Instance {
+			get { return instance; }
 		}
 
 		protected override void Initialize (IPadWindow window)
@@ -96,14 +102,16 @@ namespace MonoDevelop.TaskRunner.Gui
 			}
 		}
 
-		async Task RunTaskAsync (ITaskRunnerNode taskRunnerNode)
+		public Task<ITaskRunnerCommandResult> RunTaskAsync (ITaskRunnerNode taskRunnerNode)
 		{
+			Runtime.AssertMainThread ();
+
 			widget.OpenTaskOutputTab (taskRunnerNode.Name);
 
 			OutputProgressMonitor progressMonitor = widget.GetProgressMonitor ();
 
 			var context = new TaskRunnerCommandContext (progressMonitor);
-			await taskRunnerNode.Invoke (context);
+			return taskRunnerNode.Invoke (context);
 		}
 
 		void ToggleBinding (TaskRunnerInformation taskRunnerInfo, ITaskRunnerNode node, TaskRunnerBindEvent bindEvent)
@@ -114,6 +122,16 @@ namespace MonoDevelop.TaskRunner.Gui
 			} catch (Exception ex) {
 				LoggingService.LogError ("Toggle binding failed.", ex);
 				MessageService.ShowError (GettextCatalog.GetString ("Unable to change binding."), ex);
+			}
+		}
+
+		public static void Create ()
+		{
+			Runtime.AssertMainThread ();
+
+			if (instance == null) {
+				var pad = IdeApp.Workbench.GetPad<TaskRunnerExplorerPad> ();
+				pad.BringToFront (false);
 			}
 		}
 	}

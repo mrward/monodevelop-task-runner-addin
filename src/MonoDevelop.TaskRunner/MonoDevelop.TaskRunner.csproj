@@ -80,6 +80,7 @@
     <Compile Include="MonoDevelop.TaskRunner\TaskRunnerProgressMonitor.cs" />
     <Compile Include="MonoDevelop.TaskRunner\TaskRunnerBindings.cs" />
     <Compile Include="MonoDevelop.TaskRunner\TaskRunnerBindingInformation.cs" />
+    <Compile Include="MonoDevelop.TaskRunner\TaskRunnerProjectExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\MonoDevelop.TaskRunner.addin.xml" />

@@ -24,7 +24,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using Microsoft.VisualStudio.TaskRunnerExplorer;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 
@@ -53,5 +56,21 @@ namespace MonoDevelop.TaskRunner
 		public string Name { get; private set; }
 		public IWorkspaceFileObject WorkspaceFileObject { get; private set; }
 		public IEnumerable<TaskRunnerInformation> Tasks { get; private set; }
+
+		public IEnumerable<ITaskRunnerNode> GetTasks (TaskRunnerBindEvent bindEvent)
+		{
+			foreach (TaskRunnerInformation task in Tasks) {
+				foreach (TaskRunnerBindingInformation binding in task.Bindings) {
+					if (binding.BindEvent == bindEvent) {
+						foreach (string taskName in binding.GetTasks ()) {
+							ITaskRunnerNode node = task.GetInvokableTask (taskName);
+							if (node != null) {
+								yield return node;
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 }

@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TaskRunnerExplorer;
 using MonoDevelop.Core;
@@ -65,6 +66,27 @@ namespace MonoDevelop.TaskRunner
 		public void ToggleBinding (TaskRunnerBindEvent bindEvent, ITaskRunnerNode taskRunnerNode)
 		{
 			Bindings.ToggleBinding (bindEvent, taskRunnerNode);
+		}
+
+		public ITaskRunnerNode GetInvokableTask (string name)
+		{
+			return GetInvokableTask (name, TaskHierarchy.Children);
+		}
+
+		static ITaskRunnerNode GetInvokableTask (string name, IEnumerable<ITaskRunnerNode> tasks)
+		{
+			foreach (ITaskRunnerNode task in tasks) {
+				if (task.Invokable && task.Name == name) {
+					return task;
+				}
+
+				ITaskRunnerNode foundTask = GetInvokableTask (name, task.Children);
+				if (foundTask != null) {
+					return foundTask;
+				}
+			}
+
+			return null;
 		}
 
 		public bool RemoveBinding (TaskRunnerBindEvent bindEvent, string name)
