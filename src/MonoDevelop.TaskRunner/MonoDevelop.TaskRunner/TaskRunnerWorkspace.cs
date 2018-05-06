@@ -71,7 +71,7 @@ namespace MonoDevelop.TaskRunner
 		void SolutionLoaded (object sender, SolutionEventArgs e)
 		{
 			try {
-				FindTasks (e.Solution).Ignore ();
+				OnSolutionLoaded (e.Solution).Ignore ();
 			} catch (Exception ex) {
 				LoggingService.LogError ("TaskRunnerWorkspace SolutionLoaded error", ex);
 			}
@@ -110,6 +110,12 @@ namespace MonoDevelop.TaskRunner
 			} catch (Exception ex) {
 				LoggingService.LogError ("TaskRunnerWorkspace SolutionUnloaded error", ex);
 			}
+		}
+
+		async Task OnSolutionLoaded (Solution solution)
+		{
+			await FindTasks (solution).ConfigureAwait (false);
+			await RunProjectOpenTasksAsync (solution).ConfigureAwait (false);
 		}
 
 		async Task FindTasks (Solution solution, bool raiseTasksChangedEvent = true)
@@ -155,6 +161,28 @@ namespace MonoDevelop.TaskRunner
 			}
 
 			return buildResult;
+		}
+
+		Task RunProjectOpenTasksAsync (Solution solution)
+		{
+			return Task.Run (() => {
+				return RunProjectOpenTasks (solution);
+			});
+		}
+
+		async Task RunProjectOpenTasks (Solution solution)
+		{
+			GroupedTaskRunnerInformation tasks = GetGroupedTask (solution);
+			if (tasks != null) {
+				await RunBuildTasks (tasks, TaskRunnerBindEvent.ProjectOpened);
+			}
+
+			foreach (Project project in solution.GetAllProjects ()) {
+				tasks = GetGroupedTask (project);
+				if (tasks != null) {
+					await RunBuildTasks (tasks, TaskRunnerBindEvent.ProjectOpened);
+				}
+			}
 		}
 	}
 }
