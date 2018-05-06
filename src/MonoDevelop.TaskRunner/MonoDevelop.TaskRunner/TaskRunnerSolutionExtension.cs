@@ -49,5 +49,21 @@ namespace MonoDevelop.TaskRunner
 
 			return Solution.CombineBuildResults (preBuildTasksResult, result, postBuildTasksResult);
 		}
+
+		protected async override Task<BuildResult> Clean (
+			ProgressMonitor monitor,
+			ConfigurationSelector configuration,
+			OperationContext operationContext)
+		{
+			GroupedTaskRunnerInformation tasks = TaskRunnerServices.Workspace.GetGroupedTask (Solution);
+			if (tasks == null) {
+				return await base.Clean (monitor, configuration, operationContext);
+			}
+
+			BuildResult result = await base.Clean (monitor, configuration, operationContext);
+			BuildResult cleanTasksResult = await TaskRunnerServices.Workspace.RunBuildTasks (tasks, TaskRunnerBindEvent.Clean);
+
+			return Solution.CombineBuildResults (result, cleanTasksResult);
+		}
 	}
 }
