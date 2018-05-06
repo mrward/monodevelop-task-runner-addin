@@ -77,9 +77,9 @@ namespace MonoDevelop.TaskRunner
 			}
 		}
 
-		public GroupedTaskRunnerInformation GetGroupedTask (Project project)
+		public GroupedTaskRunnerInformation GetGroupedTask (IWorkspaceFileObject workspaceFileObject)
 		{
-			return groupedTasks.FirstOrDefault (task => task.WorkspaceFileObject == project);
+			return groupedTasks.FirstOrDefault (task => task.WorkspaceFileObject == workspaceFileObject);
 		}
 
 		public void Refresh ()
@@ -141,6 +141,20 @@ namespace MonoDevelop.TaskRunner
 				TaskRunnerExplorerPad.Create ();
 				return TaskRunnerExplorerPad.Instance.RunTaskAsync (node);
 			});
+		}
+
+		public async Task<BuildResult> RunBuildTasks (GroupedTaskRunnerInformation tasks, TaskRunnerBindEvent bindEvent)
+		{
+			var buildResult = new BuildResult ();
+
+			foreach (ITaskRunnerNode node in tasks.GetTasks (bindEvent)) {
+				ITaskRunnerCommandResult result = await TaskRunnerServices.Workspace.RunTask (node);
+				if (result.ExitCode != 0) {
+					buildResult.AddWarning (node, result);
+				}
+			}
+
+			return buildResult;
 		}
 	}
 }

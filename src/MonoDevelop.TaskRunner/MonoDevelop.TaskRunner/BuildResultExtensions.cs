@@ -1,5 +1,5 @@
 ﻿//
-// TaskRunnerSolutionExtension.cs
+// BuildResultExtensions.cs
 //
 // Author:
 //       Matt Ward <matt.ward@microsoft.com>
@@ -24,30 +24,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.TaskRunnerExplorer;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.TaskRunner
 {
-	class TaskRunnerSolutionExtension : SolutionExtension
+	static class BuildResultExtensions
 	{
-		protected async override Task<BuildResult> Build (
-			ProgressMonitor monitor,
-			ConfigurationSelector configuration,
-			OperationContext operationContext)
+		public static void AddWarning (this BuildResult buildResult, ITaskRunnerNode task, ITaskRunnerCommandResult result)
 		{
-			GroupedTaskRunnerInformation tasks = TaskRunnerServices.Workspace.GetGroupedTask (Solution);
-			if (tasks == null) {
-				return await base.Build (monitor, configuration, operationContext);
-			}
+			buildResult.AddWarning (GetBuildWarning (task, result));
+		}
 
-			BuildResult preBuildTasksResult = await TaskRunnerServices.Workspace.RunBuildTasks (tasks, TaskRunnerBindEvent.BeforeBuild);
-			BuildResult result = await base.Build (monitor, configuration, operationContext);
-			BuildResult postBuildTasksResult = await TaskRunnerServices.Workspace.RunBuildTasks (tasks, TaskRunnerBindEvent.AfterBuild);
-
-			return Solution.CombineBuildResults (preBuildTasksResult, result, postBuildTasksResult);
+		static string GetBuildWarning (ITaskRunnerNode task, ITaskRunnerCommandResult result)
+		{
+			return GettextCatalog.GetString (
+				"Task {0} failed with exit code {1}. Command: {2}",
+				task.Name,
+				result.ExitCode,
+				task.Command.ToCommandLine ());
 		}
 	}
 }

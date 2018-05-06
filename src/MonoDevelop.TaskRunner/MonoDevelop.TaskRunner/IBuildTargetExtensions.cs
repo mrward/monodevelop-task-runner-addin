@@ -1,5 +1,5 @@
 ﻿//
-// TaskRunnerSolutionExtension.cs
+// IBuildTargetExtensions.cs
 //
 // Author:
 //       Matt Ward <matt.ward@microsoft.com>
@@ -24,30 +24,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Threading.Tasks;
-using Microsoft.VisualStudio.TaskRunnerExplorer;
-using MonoDevelop.Core;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.TaskRunner
 {
-	class TaskRunnerSolutionExtension : SolutionExtension
+	static class IBuildTargetExtensions
 	{
-		protected async override Task<BuildResult> Build (
-			ProgressMonitor monitor,
-			ConfigurationSelector configuration,
-			OperationContext operationContext)
+		public static BuildResult CombineBuildResults (this IBuildTarget target, params BuildResult[] results)
 		{
-			GroupedTaskRunnerInformation tasks = TaskRunnerServices.Workspace.GetGroupedTask (Solution);
-			if (tasks == null) {
-				return await base.Build (monitor, configuration, operationContext);
-			}
+			var combinedResult = new BuildResult ();
+			combinedResult.SourceTarget = target;
+			combinedResult.Append (results);
 
-			BuildResult preBuildTasksResult = await TaskRunnerServices.Workspace.RunBuildTasks (tasks, TaskRunnerBindEvent.BeforeBuild);
-			BuildResult result = await base.Build (monitor, configuration, operationContext);
-			BuildResult postBuildTasksResult = await TaskRunnerServices.Workspace.RunBuildTasks (tasks, TaskRunnerBindEvent.AfterBuild);
-
-			return Solution.CombineBuildResults (preBuildTasksResult, result, postBuildTasksResult);
+			return combinedResult;
 		}
 	}
 }

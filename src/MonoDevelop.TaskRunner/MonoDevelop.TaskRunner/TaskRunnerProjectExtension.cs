@@ -43,43 +43,11 @@ namespace MonoDevelop.TaskRunner
 				return await base.OnBuild (monitor, configuration, operationContext);
 			}
 
-			BuildResult preBuildTasksResult = await RunBuildTasks (tasks, TaskRunnerBindEvent.BeforeBuild);
+			BuildResult preBuildTasksResult = await TaskRunnerServices.Workspace.RunBuildTasks (tasks, TaskRunnerBindEvent.BeforeBuild);
 			BuildResult result = await base.OnBuild (monitor, configuration, operationContext);
-			BuildResult postBuildTasksResult = await RunBuildTasks (tasks, TaskRunnerBindEvent.AfterBuild);
+			BuildResult postBuildTasksResult = await TaskRunnerServices.Workspace.RunBuildTasks (tasks, TaskRunnerBindEvent.AfterBuild);
 
-			return CombineBuildResults (preBuildTasksResult, result, postBuildTasksResult);
-		}
-
-		BuildResult CombineBuildResults (params BuildResult[] results)
-		{
-			var combinedResult = new BuildResult ();
-			combinedResult.SourceTarget = Project;
-			combinedResult.Append (results);
-
-			return combinedResult;
-		}
-
-		async Task<BuildResult> RunBuildTasks (GroupedTaskRunnerInformation tasks, TaskRunnerBindEvent bindEvent)
-		{
-			var buildResult = new BuildResult ();
-
-			foreach (ITaskRunnerNode node in tasks.GetTasks (bindEvent)) {
-				ITaskRunnerCommandResult result = await TaskRunnerServices.Workspace.RunTask (node);
-				if (result.ExitCode != 0) {
-					buildResult.AddWarning (GetBuildWarning (node, result));
-				}
-			}
-
-			return buildResult;
-		}
-
-		static string GetBuildWarning (ITaskRunnerNode task, ITaskRunnerCommandResult result)
-		{
-			return GettextCatalog.GetString (
-				"Task {0} failed with exit code {1}. Command: {2}",
-				task.Name,
-				result.ExitCode,
-				task.Command.ToCommandLine ());
+			return Project.CombineBuildResults (preBuildTasksResult, result, postBuildTasksResult);
 		}
 	}
 }

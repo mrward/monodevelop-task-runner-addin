@@ -84,5 +84,6 @@
 
 	<Extension path="/MonoDevelop/ProjectModel/ProjectModelExtensions">
 		<Class class="MonoDevelop.TaskRunner.TaskRunnerProjectExtension" />
+		<Class class="MonoDevelop.TaskRunner.TaskRunnerSolutionExtension" />
 	</Extension>
 </ExtensionModel>
