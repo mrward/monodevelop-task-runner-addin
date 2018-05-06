@@ -145,7 +145,7 @@ namespace MonoDevelop.TaskRunner
 		{
 			return Runtime.RunInMainThread (() => {
 				TaskRunnerExplorerPad.Create ();
-				return TaskRunnerExplorerPad.Instance.RunTaskAsync (node);
+				return TaskRunnerExplorerPad.Instance.RunTaskAsync (node, clearConsole: false);
 			});
 		}
 

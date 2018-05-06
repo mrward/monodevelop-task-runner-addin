@@ -84,6 +84,7 @@
     <Compile Include="MonoDevelop.TaskRunner\TaskRunnerSolutionExtension.cs" />
     <Compile Include="MonoDevelop.TaskRunner\BuildResultExtensions.cs" />
     <Compile Include="MonoDevelop.TaskRunner\IBuildTargetExtensions.cs" />
+    <Compile Include="MonoDevelop.TaskRunner\LogViewExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\MonoDevelop.TaskRunner.addin.xml" />

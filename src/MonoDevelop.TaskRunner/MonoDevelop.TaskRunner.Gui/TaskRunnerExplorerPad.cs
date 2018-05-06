@@ -102,13 +102,13 @@ namespace MonoDevelop.TaskRunner.Gui
 			}
 		}
 
-		public Task<ITaskRunnerCommandResult> RunTaskAsync (ITaskRunnerNode taskRunnerNode)
+		public Task<ITaskRunnerCommandResult> RunTaskAsync (ITaskRunnerNode taskRunnerNode, bool clearConsole = true)
 		{
 			Runtime.AssertMainThread ();
 
 			widget.OpenTaskOutputTab (taskRunnerNode.Name);
 
-			OutputProgressMonitor progressMonitor = widget.GetProgressMonitor ();
+			OutputProgressMonitor progressMonitor = widget.GetProgressMonitor (clearConsole);
 
 			var context = new TaskRunnerCommandContext (progressMonitor);
 			return taskRunnerNode.Invoke (context);

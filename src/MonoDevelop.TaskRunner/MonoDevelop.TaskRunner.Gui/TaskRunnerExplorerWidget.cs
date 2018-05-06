@@ -64,6 +64,8 @@ namespace MonoDevelop.TaskRunner.Gui
 			selectedTaskRunnerNode = null;
 			projectsComboBox.Items.Clear ();
 			tasksTreeStore.Clear ();
+
+			logView?.Clear ();
 		}
 
 		public void AddTasks (IEnumerable<GroupedTaskRunnerInformation> tasks)
@@ -207,9 +209,9 @@ namespace MonoDevelop.TaskRunner.Gui
 			}
 		}
 
-		public OutputProgressMonitor GetProgressMonitor ()
+		public OutputProgressMonitor GetProgressMonitor (bool clearConsole = true)
 		{
-			return logView.GetProgressMonitor ();
+			return logView.GetProgressMonitor (clearConsole);
 		}
 
 		public void OpenTaskOutputTab (string name)
