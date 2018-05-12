@@ -228,6 +228,12 @@ namespace MonoDevelop.TaskRunner.Gui
 			notebook.CurrentTab = taskOutputTab;
 		}
 
+		public void ShowResult (ITaskRunnerCommandResult result)
+		{
+			string message = GettextCatalog.GetString ("Process terminated with code {0}{1}", result.ExitCode, Environment.NewLine);
+			logView.WriteText (null, message);
+		}
+
 		void TasksTreeViewRowActivated (object sender, TreeViewRowEventArgs e)
 		{
 			selectedTaskRunnerNode = GetTaskRunnerTreeNode (e.Position);

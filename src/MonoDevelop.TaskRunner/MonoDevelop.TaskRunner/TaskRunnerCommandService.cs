@@ -58,9 +58,6 @@ namespace MonoDevelop.TaskRunner
 
 				currentOperation = null;
 
-				string message = GettextCatalog.GetString ("Process terminated with code {0}", result.ExitCode);
-				monitor.Log.WriteLine (message);
-
 				return new TaskRunnerCommandResult {
 					StandardOutput = monitor.GetStandardOutputText (),
 					StandardError = monitor.GetStandardErrorText (),

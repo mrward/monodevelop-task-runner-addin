@@ -102,7 +102,7 @@ namespace MonoDevelop.TaskRunner.Gui
 			}
 		}
 
-		public Task<ITaskRunnerCommandResult> RunTaskAsync (ITaskRunnerNode taskRunnerNode, bool clearConsole = true)
+		public async Task<ITaskRunnerCommandResult> RunTaskAsync (ITaskRunnerNode taskRunnerNode, bool clearConsole = true)
 		{
 			Runtime.AssertMainThread ();
 
@@ -111,7 +111,9 @@ namespace MonoDevelop.TaskRunner.Gui
 			OutputProgressMonitor progressMonitor = widget.GetProgressMonitor (clearConsole);
 
 			var context = new TaskRunnerCommandContext (progressMonitor);
-			return taskRunnerNode.Invoke (context);
+			var result = await taskRunnerNode.Invoke (context);
+			widget.ShowResult (result);
+			return result;
 		}
 
 		void ToggleBinding (TaskRunnerInformation taskRunnerInfo, ITaskRunnerNode node, TaskRunnerBindEvent bindEvent)
