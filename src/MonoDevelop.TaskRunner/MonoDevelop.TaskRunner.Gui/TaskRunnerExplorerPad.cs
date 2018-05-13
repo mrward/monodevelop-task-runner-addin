@@ -41,6 +41,7 @@ namespace MonoDevelop.TaskRunner.Gui
 	{
 		TaskRunnerExplorerWidget widget;
 		Button refreshButton;
+		Button clearButton;
 		static TaskRunnerExplorerPad instance;
 
 		public TaskRunnerExplorerPad ()
@@ -80,11 +81,25 @@ namespace MonoDevelop.TaskRunner.Gui
 			toolbar.Add (refreshButton);
 
 			toolbar.ShowAll ();
+
+			toolbar = window.GetToolbar (DockPositionType.Right);
+
+			clearButton = new Button (new ImageView (Ide.Gui.Stock.Broom, IconSize.Menu));
+			clearButton.Clicked += OnClearButtonClick;
+			clearButton.TooltipText = GettextCatalog.GetString ("Clear Output");
+			toolbar.Add (clearButton);
+
+			toolbar.ShowAll ();
 		}
 
 		void OnButtonRefreshClick (object sender, EventArgs e)
 		{
 			TaskRunnerServices.Workspace.Refresh ();
+		}
+
+		void OnClearButtonClick (object sender, EventArgs e)
+		{
+			widget.ClearLog ();
 		}
 
 		void TasksChanged (object sender, EventArgs e)

@@ -234,6 +234,11 @@ namespace MonoDevelop.TaskRunner.Gui
 			logView.WriteText (null, message);
 		}
 
+		public void ClearLog ()
+		{
+			logView?.Clear ();
+		}
+
 		void TasksTreeViewRowActivated (object sender, TreeViewRowEventArgs e)
 		{
 			selectedTaskRunnerNode = GetTaskRunnerTreeNode (e.Position);
