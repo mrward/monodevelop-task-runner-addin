@@ -77,7 +77,7 @@ namespace MonoDevelop.TaskRunner
 			return false;
 		}
 
-		TaskRunnerBindingInformation FindBinding (TaskRunnerBindEvent bindEvent)
+		public TaskRunnerBindingInformation FindBinding (TaskRunnerBindEvent bindEvent)
 		{
 			return bindings.FirstOrDefault (binding => binding.BindEvent == bindEvent);
 		}

@@ -135,7 +135,6 @@ namespace MonoDevelop.TaskRunner.Gui
 		{
 			try {
 				taskRunnerInfo.ToggleBinding (bindEvent, node);
-				widget.RefreshBindings ();
 			} catch (Exception ex) {
 				LoggingService.LogError ("Toggle binding failed.", ex);
 				MessageService.ShowError (GettextCatalog.GetString ("Unable to change binding."), ex);

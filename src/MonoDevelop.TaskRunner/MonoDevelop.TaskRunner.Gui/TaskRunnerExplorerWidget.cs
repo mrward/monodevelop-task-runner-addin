@@ -128,20 +128,6 @@ namespace MonoDevelop.TaskRunner.Gui
 			}
 		}
 
-		public void RefreshBindings ()
-		{
-			ClearBindings ();
-
-			var groupedTaskRunner = projectsComboBox.SelectedItem as GroupedTaskRunnerInformation;
-			if (groupedTaskRunner == null) {
-				return;
-			}
-
-			foreach (var task in groupedTaskRunner.Tasks) {
-				AddBindingNodes(task);
-			}
-		}
-
 		void AddBindingNodes (TaskRunnerInformation task, TaskRunnerBindingInformation binding)
 		{
 			TaskBindingTreeNode parentNode = GetBindingTreeNode (binding.BindEvent);
@@ -204,9 +190,14 @@ namespace MonoDevelop.TaskRunner.Gui
 			}
 
 			if (node.IsRootNode) {
-				node.RefreshName ();
-				navigator.SetValue (bindingNodeNameField, node.Name);
+				RefreshBindingNodeName (node, navigator);
 			}
+		}
+
+		void RefreshBindingNodeName (TaskBindingTreeNode node, TreeNavigator navigator)
+		{
+			node.RefreshName ();
+			navigator.SetValue (bindingNodeNameField, node.Name);
 		}
 
 		public OutputProgressMonitor GetProgressMonitor (bool clearConsole = true)
@@ -355,6 +346,33 @@ namespace MonoDevelop.TaskRunner.Gui
 		{
 			if (CanRunSelectedTask ()) {
 				OnToggleBinding (selectedTaskRunnerNode.TaskInfo, selectedTaskRunnerNode.TaskRunner, bindEvent);
+				RefreshBindingNode (selectedTaskRunnerNode, bindEvent);
+			}
+		}
+
+		/// <summary>
+		/// Removes the binding child nodes and then adds the children back again if there are any.
+		/// </summary>
+		void RefreshBindingNode (TaskRunnerTreeNode taskRunnerNode, TaskRunnerBindEvent bindEvent)
+		{
+			// Ensure binding tab is displayed.
+			notebook.CurrentTab = notebook.Tabs [0];
+
+			TaskRunnerBindingInformation binding = taskRunnerNode.TaskInfo.Bindings.FindBinding (bindEvent);
+			TaskBindingTreeNode bindingNode = GetBindingTreeNode (bindEvent);
+
+			TreeNavigator navigator = GetNavigator (bindingNode);
+			if (navigator == null)
+				return;
+
+			navigator.RemoveChildren ();
+
+			if (binding != null) {
+				AddBindingChildNodes (taskRunnerNode.TaskInfo, binding, navigator, bindingNode);
+				bindingsTreeView.ExpandRow (navigator.CurrentPosition, true);
+			} else {
+				// No more bindings. Last binding has been removed.
+				RefreshBindingNodeName (bindingNode, navigator);
 			}
 		}
 
@@ -427,8 +445,7 @@ namespace MonoDevelop.TaskRunner.Gui
 
 			navigator = GetNavigator (parentNode);
 			if (navigator != null) {
-				parentNode.RefreshName ();
-				navigator.SetValue (bindingNodeNameField, parentNode.Name);
+				RefreshBindingNodeName (parentNode, navigator);
 				if (!parentNode.AnyBindings ()) {
 					navigator.RemoveChildren ();
 				}
