@@ -1,5 +1,5 @@
 ﻿//
-// TaskRunnerServices.cs
+// TaskRunnerExplorerOptionsPanel.cs
 //
 // Author:
 //       Matt Ward <matt.ward@microsoft.com>
@@ -24,47 +24,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using MonoDevelop.Core;
-using MonoDevelop.Ide.Composition;
+using MonoDevelop.Ide.Gui.Dialogs;
 
-namespace MonoDevelop.TaskRunner
+namespace MonoDevelop.TaskRunner.Gui
 {
-	static class TaskRunnerServices
+	partial class TaskRunnerExplorerOptionsPanel : OptionsPanel
 	{
-		static TaskRunnerWorkspace workspace;
-		static TaskRunnerProvider taskRunnerProvider;
-		static TaskRunnerExplorerOptions options;
+		bool originalRunTasksSetting = TaskRunnerServices.Options.RunTasksAutomatically;
 
-		public static TaskRunnerWorkspace Workspace {
-			get { return workspace; }
-		}
-
-		public static TaskRunnerExplorerOptions Options {
-			get { return options; }
-		}
-
-		public static bool AutomaticallyRunTasks {
-			get { return options.RunTasksAutomatically; }
-		}
-
-		static internal void Initialize ()
+		public override void ApplyChanges ()
 		{
-			try {
-				InitializeServices ();
-			} catch (Exception ex) {
-				LoggingService.LogError ("TaskRunnerServices.Initialize error", ex);
+			bool runTasksSetting = automaticallyrunTasksCheckBox.Active;
+			if (runTasksSetting != originalRunTasksSetting) {
+				TaskRunnerServices.Options.RunTasksAutomatically = runTasksSetting;
 			}
-		}
-
-		static void InitializeServices ()
-		{
-			options = new TaskRunnerExplorerOptions ();
-
-			taskRunnerProvider = CompositionManager.GetExportedValue<TaskRunnerProvider> ();
-			taskRunnerProvider.Initialize ();
-
-			workspace = new TaskRunnerWorkspace (taskRunnerProvider);
 		}
 	}
 }

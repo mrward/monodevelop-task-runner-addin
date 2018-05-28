@@ -38,6 +38,10 @@ namespace MonoDevelop.TaskRunner
 			ConfigurationSelector configuration,
 			OperationContext operationContext)
 		{
+			if (!TaskRunnerServices.AutomaticallyRunTasks) {
+				return await base.OnBuild (monitor, configuration, operationContext);
+			}
+
 			GroupedTaskRunnerInformation tasks = TaskRunnerServices.Workspace.GetGroupedTask (Project);
 			if (tasks == null) {
 				return await base.OnBuild (monitor, configuration, operationContext);
@@ -55,6 +59,10 @@ namespace MonoDevelop.TaskRunner
 			ConfigurationSelector configuration,
 			OperationContext operationContext)
 		{
+			if (!TaskRunnerServices.AutomaticallyRunTasks) {
+				return await base.OnClean (monitor, configuration, operationContext);
+			}
+
 			GroupedTaskRunnerInformation tasks = TaskRunnerServices.Workspace.GetGroupedTask (Project);
 			if (tasks == null) {
 				return await base.OnClean (monitor, configuration, operationContext);

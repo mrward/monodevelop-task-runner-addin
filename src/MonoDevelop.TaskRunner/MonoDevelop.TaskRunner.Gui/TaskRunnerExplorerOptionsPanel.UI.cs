@@ -1,5 +1,5 @@
 ﻿//
-// TaskRunnerServices.cs
+// TaskRunnerExplorerOptionsPanel.UI.cs
 //
 // Author:
 //       Matt Ward <matt.ward@microsoft.com>
@@ -24,47 +24,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
+using MonoDevelop.Components;
 using MonoDevelop.Core;
-using MonoDevelop.Ide.Composition;
+using Xwt;
 
-namespace MonoDevelop.TaskRunner
+namespace MonoDevelop.TaskRunner.Gui
 {
-	static class TaskRunnerServices
+	partial class TaskRunnerExplorerOptionsPanel
 	{
-		static TaskRunnerWorkspace workspace;
-		static TaskRunnerProvider taskRunnerProvider;
-		static TaskRunnerExplorerOptions options;
+		CheckBox automaticallyrunTasksCheckBox;
 
-		public static TaskRunnerWorkspace Workspace {
-			get { return workspace; }
-		}
-
-		public static TaskRunnerExplorerOptions Options {
-			get { return options; }
-		}
-
-		public static bool AutomaticallyRunTasks {
-			get { return options.RunTasksAutomatically; }
-		}
-
-		static internal void Initialize ()
+		public override Control CreatePanelWidget ()
 		{
-			try {
-				InitializeServices ();
-			} catch (Exception ex) {
-				LoggingService.LogError ("TaskRunnerServices.Initialize error", ex);
-			}
+			var vbox = new VBox ();
+			vbox.Spacing = 6;
+
+			var sectionLabel = new Label ();
+			sectionLabel.Markup = GetBoldMarkup ("Tasks");
+			sectionLabel.TextAlignment = Alignment.Start;
+			vbox.PackStart (sectionLabel, false, false);
+
+			automaticallyrunTasksCheckBox = new CheckBox (GettextCatalog.GetString ("Automatically run tasks."));
+			automaticallyrunTasksCheckBox.Active = originalRunTasksSetting;
+			vbox.PackStart (automaticallyrunTasksCheckBox, false, false);
+
+			return vbox.ToGtkWidget ();
 		}
 
-		static void InitializeServices ()
+		static string GetBoldMarkup (string phrase)
 		{
-			options = new TaskRunnerExplorerOptions ();
-
-			taskRunnerProvider = CompositionManager.GetExportedValue<TaskRunnerProvider> ();
-			taskRunnerProvider.Initialize ();
-
-			workspace = new TaskRunnerWorkspace (taskRunnerProvider);
+			return "<b>" + GettextCatalog.GetString (phrase) + "</b>";
 		}
 	}
 }

@@ -109,7 +109,10 @@ namespace MonoDevelop.TaskRunner
 		async Task OnSolutionLoaded (Solution solution)
 		{
 			await FindTasks (solution).ConfigureAwait (false);
-			await RunProjectOpenTasksAsync (solution).ConfigureAwait (false);
+
+			if (TaskRunnerServices.AutomaticallyRunTasks) {
+				await RunProjectOpenTasksAsync (solution).ConfigureAwait (false);
+			}
 		}
 
 		async Task FindTasks (Solution solution, bool raiseTasksChangedEvent = true)

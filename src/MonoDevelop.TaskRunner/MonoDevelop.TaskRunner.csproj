@@ -85,6 +85,11 @@
     <Compile Include="MonoDevelop.TaskRunner\BuildResultExtensions.cs" />
     <Compile Include="MonoDevelop.TaskRunner\IBuildTargetExtensions.cs" />
     <Compile Include="MonoDevelop.TaskRunner\LogViewExtensions.cs" />
+    <Compile Include="MonoDevelop.TaskRunner.Gui\TaskRunnerExplorerOptionsPanel.cs" />
+    <Compile Include="MonoDevelop.TaskRunner.Gui\TaskRunnerExplorerOptionsPanel.UI.cs">
+      <DependentUpon>TaskRunnerExplorerOptionsPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MonoDevelop.TaskRunner\TaskRunnerExplorerOptions.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\MonoDevelop.TaskRunner.addin.xml" />

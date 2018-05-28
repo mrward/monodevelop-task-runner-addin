@@ -1,5 +1,5 @@
 ﻿//
-// TaskRunnerServices.cs
+// TaskRunnerExplorerOptions.cs
 //
 // Author:
 //       Matt Ward <matt.ward@microsoft.com>
@@ -24,47 +24,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using MonoDevelop.Core;
-using MonoDevelop.Ide.Composition;
 
 namespace MonoDevelop.TaskRunner
 {
-	static class TaskRunnerServices
+	class TaskRunnerExplorerOptions
 	{
-		static TaskRunnerWorkspace workspace;
-		static TaskRunnerProvider taskRunnerProvider;
-		static TaskRunnerExplorerOptions options;
+		const string RunTasksAutomaticallyPropertyName = "RunTasksAutomatically";
 
-		public static TaskRunnerWorkspace Workspace {
-			get { return workspace; }
-		}
+		Properties properties;
 
-		public static TaskRunnerExplorerOptions Options {
-			get { return options; }
-		}
-
-		public static bool AutomaticallyRunTasks {
-			get { return options.RunTasksAutomatically; }
-		}
-
-		static internal void Initialize ()
+		public TaskRunnerExplorerOptions (Properties properties)
 		{
-			try {
-				InitializeServices ();
-			} catch (Exception ex) {
-				LoggingService.LogError ("TaskRunnerServices.Initialize error", ex);
-			}
+			this.properties = properties;
 		}
 
-		static void InitializeServices ()
+		public TaskRunnerExplorerOptions()
+			: this (PropertyService.Get ("TaskRunnerExplorerSettings", new Properties ()))
 		{
-			options = new TaskRunnerExplorerOptions ();
+		}
 
-			taskRunnerProvider = CompositionManager.GetExportedValue<TaskRunnerProvider> ();
-			taskRunnerProvider.Initialize ();
-
-			workspace = new TaskRunnerWorkspace (taskRunnerProvider);
+		public bool RunTasksAutomatically {
+			get { return properties.Get (RunTasksAutomaticallyPropertyName, true); }
+			set { properties.Set (RunTasksAutomaticallyPropertyName, value); }
 		}
 	}
 }

@@ -86,4 +86,10 @@
 		<Class class="MonoDevelop.TaskRunner.TaskRunnerProjectExtension" />
 		<Class class="MonoDevelop.TaskRunner.TaskRunnerSolutionExtension" />
 	</Extension>
+
+	<Extension path="/MonoDevelop/Ide/GlobalOptionsDialog">
+		<Section id="MonoDevelop.TaskRunner" _label="Task Runner" insertbefore="Other">
+			<Section id="TaskRunnerExplorerGeneral" _label="General" fill="true" class="MonoDevelop.TaskRunner.Gui.TaskRunnerExplorerOptionsPanel" />
+		</Section>
+	</Extension>
 </ExtensionModel>
