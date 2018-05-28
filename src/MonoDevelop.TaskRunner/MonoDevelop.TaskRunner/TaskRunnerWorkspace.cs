@@ -32,6 +32,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TaskRunnerExplorer;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.TaskRunner.Gui;
 
@@ -168,17 +169,40 @@ namespace MonoDevelop.TaskRunner
 
 		async Task RunProjectOpenTasks (Solution solution)
 		{
-			GroupedTaskRunnerInformation tasks = GetGroupedTask (solution);
-			if (tasks != null) {
-				await RunBuildTasks (tasks, TaskRunnerBindEvent.ProjectOpened);
-			}
-
-			foreach (Project project in solution.GetAllProjects ()) {
-				tasks = GetGroupedTask (project);
+			ProgressMonitor monitor = null;
+			try {
+				GroupedTaskRunnerInformation tasks = GetGroupedTask (solution);
 				if (tasks != null) {
+					monitor = CreateProgressMonitor ();
 					await RunBuildTasks (tasks, TaskRunnerBindEvent.ProjectOpened);
 				}
+
+				foreach (Project project in solution.GetAllProjects ()) {
+					tasks = GetGroupedTask (project);
+					if (tasks != null) {
+						if (monitor == null) {
+							monitor = CreateProgressMonitor ();
+						}
+						await RunBuildTasks (tasks, TaskRunnerBindEvent.ProjectOpened);
+					}
+				}
+			} finally {
+				monitor?.Dispose ();
 			}
+		}
+
+		ProgressMonitor CreateProgressMonitor ()
+		{
+			var pad = IdeApp.Workbench.GetPad<TaskRunnerExplorerPad> ();
+
+			return IdeApp.Workbench.ProgressMonitors.GetStatusProgressMonitor (
+				GettextCatalog.GetString ("Running tasks for solution..."),
+				Stock.StatusSolutionOperation,
+				false,
+				false,
+				false,
+				pad,
+				true);
 		}
 	}
 }
