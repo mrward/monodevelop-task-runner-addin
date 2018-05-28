@@ -36,7 +36,6 @@ namespace MonoDevelop.TaskRunner
 {
 	class TaskRunnerConfigurationLocator
 	{
-		List<TaskRunnerInformation> tasks = new List<TaskRunnerInformation> ();
 		List<GroupedTaskRunnerInformation> groupedTasks = new List<GroupedTaskRunnerInformation> ();
 		TaskRunnerProvider taskRunnerProvider;
 		Solution solution;
@@ -45,10 +44,6 @@ namespace MonoDevelop.TaskRunner
 		{
 			this.taskRunnerProvider = taskRunnerProvider;
 			this.solution = solution;
-		}
-
-		public IEnumerable<TaskRunnerInformation> Tasks {
-			get { return tasks; }
 		}
 
 		public IEnumerable<GroupedTaskRunnerInformation> GroupedTasks {
@@ -65,8 +60,6 @@ namespace MonoDevelop.TaskRunner
 			foreach (var project in solution.GetAllProjects ()) {
 				var foundProjectTasks = await FindTasks (project);
 				if (foundProjectTasks != null) {
-					tasks.AddRange (foundProjectTasks);
-
 					var info = new GroupedTaskRunnerInformation (project, foundProjectTasks);
 					groupedTasks.Add (info);
 				}
@@ -77,8 +70,6 @@ namespace MonoDevelop.TaskRunner
 			var foundTasks = await FindTasks (solution);
 
 			if (foundTasks != null) {
-				tasks.AddRange (foundTasks);
-
 				var info = new GroupedTaskRunnerInformation (solution, foundTasks);
 				groupedTasks.Insert (0, info);
 			}

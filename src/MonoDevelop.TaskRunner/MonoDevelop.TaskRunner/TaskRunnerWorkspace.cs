@@ -40,7 +40,6 @@ namespace MonoDevelop.TaskRunner
 	class TaskRunnerWorkspace
 	{
 		TaskRunnerProvider taskRunnerProvider;
-		ImmutableList<TaskRunnerInformation> taskRunnerList = ImmutableList<TaskRunnerInformation>.Empty;
 		ImmutableList<GroupedTaskRunnerInformation> groupedTasks = ImmutableList<GroupedTaskRunnerInformation>.Empty;
 
 		public TaskRunnerWorkspace (TaskRunnerProvider taskRunnerProvider)
@@ -58,10 +57,6 @@ namespace MonoDevelop.TaskRunner
 			Runtime.RunInMainThread (() => {
 				TasksChanged?.Invoke (this, EventArgs.Empty);
 			});
-		}
-
-		public IEnumerable<TaskRunnerInformation> Tasks {
-			get { return taskRunnerList; }
 		}
 
 		public IEnumerable<GroupedTaskRunnerInformation> GroupedTasks {
@@ -93,7 +88,6 @@ namespace MonoDevelop.TaskRunner
 
 		async Task RefreshInternal ()
 		{
-			taskRunnerList = taskRunnerList.Clear ();
 			groupedTasks = groupedTasks.Clear ();
 
 			foreach (var solution in IdeApp.Workspace.GetAllSolutions ()) {
@@ -123,8 +117,7 @@ namespace MonoDevelop.TaskRunner
 			var locator = new TaskRunnerConfigurationLocator (taskRunnerProvider, solution);
 			await locator.FindTasks ();
 
-			if (locator.Tasks.Any ()) {
-				taskRunnerList = taskRunnerList.AddRange (locator.Tasks);
+			if (locator.GroupedTasks.Any ()) {
 				groupedTasks = groupedTasks.AddRange (locator.GroupedTasks);
 
 				if (raiseTasksChangedEvent) {
