@@ -51,6 +51,7 @@ namespace MonoDevelop.TaskRunner.Gui
 
 			tasksTreeView.ButtonPressed += TasksTreeViewButtonPressed;
 			tasksTreeView.RowActivated += TasksTreeViewRowActivated;
+			tasksTreeView.SelectionChanged += TasksTreeViewSelectionChanged;
 
 			bindingsTreeView.ButtonPressed += BindingsTreeViewButtonPressed;
 		}
@@ -58,6 +59,9 @@ namespace MonoDevelop.TaskRunner.Gui
 		public Action<ITaskRunnerNode> OnRunTask = node => { };
 		public Action<TaskRunnerInformation, ITaskRunnerNode, TaskRunnerBindEvent> OnToggleBinding =
 			(info, node, bindEvent) => { };
+
+		public Action<TaskRunnerInformation> OnTaskRunnerSelected =
+			(TaskRunnerInformation task) => { };
 
 		public void ClearTasks ()
 		{
@@ -509,6 +513,12 @@ namespace MonoDevelop.TaskRunner.Gui
 				navigator.SetValue (bindingNodeNameField, otherBindingNode.Name);
 				navigator.SetValue (bindingNodeField, otherBindingNode);
 			}
+		}
+
+		void TasksTreeViewSelectionChanged (object sender, EventArgs e)
+		{
+			selectedTaskRunnerNode = GetTaskRunnerTreeNode (tasksTreeView.SelectedRow);
+			OnTaskRunnerSelected (selectedTaskRunnerNode.TaskInfo);
 		}
 	}
 }

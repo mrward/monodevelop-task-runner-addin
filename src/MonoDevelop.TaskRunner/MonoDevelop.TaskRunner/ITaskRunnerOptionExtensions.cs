@@ -1,5 +1,5 @@
 ﻿//
-// ITaskRunnerOption.cs
+// ITaskRunnerOptionExtensions.cs
 //
 // Author:
 //       Matt Ward <matt.ward@microsoft.com>
@@ -24,17 +24,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MonoDevelop.Core;
+using Microsoft.VisualStudio.TaskRunnerExplorer;
 
-namespace Microsoft.VisualStudio.TaskRunnerExplorer
+namespace MonoDevelop.TaskRunner
 {
-	public interface ITaskRunnerOption
+	static class ITaskRunnerOptionExtensions
 	{
-		string Name { get; }
-		string Description { get; }
-		IconId Icon { get; }
+		public static string GetTooltipText (this ITaskRunnerOption option)
+		{
+			if (!string.IsNullOrEmpty (option.Description)) {
+				return option.Description;
+			}
 
-		bool Checked { get; set; }
-		string Command { get; set; }
+			return option.Name;
+		}
 	}
 }

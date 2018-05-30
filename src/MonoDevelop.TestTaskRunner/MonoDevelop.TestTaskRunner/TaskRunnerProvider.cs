@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TaskRunnerExplorer;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.TestTaskRunner
 {
@@ -24,7 +25,7 @@ namespace MonoDevelop.TestTaskRunner
 			get {
 				if (options == null) {
 					options = new List<ITaskRunnerOption> ();
-					options.Add (new TaskRunnerOption ("Verbose", 123, Guid.Parse ("{8B200612-65E7-402F-B1EC-373F3AB4196F}"), false, " (verbose)"));
+					options.Add (new TaskRunnerOption ("Verbose", Stock.Information, false, " (verbose)"));
 				}
 
 				return options;

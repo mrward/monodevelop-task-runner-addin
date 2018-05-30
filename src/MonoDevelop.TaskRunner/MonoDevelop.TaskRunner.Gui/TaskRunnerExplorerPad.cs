@@ -25,6 +25,8 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Gtk;
 using Microsoft.VisualStudio.TaskRunnerExplorer;
@@ -42,6 +44,9 @@ namespace MonoDevelop.TaskRunner.Gui
 		TaskRunnerExplorerWidget widget;
 		Button refreshButton;
 		Button clearButton;
+		HSeparator separator;
+		List<ToggleButton> optionButtons = new List<ToggleButton> ();
+		DockItemToolbar optionsToolbar;
 		static TaskRunnerExplorerPad instance;
 
 		public TaskRunnerExplorerPad ()
@@ -62,6 +67,7 @@ namespace MonoDevelop.TaskRunner.Gui
 				widget = new TaskRunnerExplorerWidget ();
 				widget.OnRunTask = RunTask;
 				widget.OnToggleBinding = ToggleBinding;
+				widget.OnTaskRunnerSelected = TaskRunnerSelected;
 				widget.AddTasks (TaskRunnerServices.Workspace.GroupedTasks);
 				return widget.ToGtkWidget ();
 			}
@@ -74,6 +80,7 @@ namespace MonoDevelop.TaskRunner.Gui
 		protected override void Initialize (IPadWindow window)
 		{
 			DockItemToolbar toolbar = window.GetToolbar (DockPositionType.Left);
+			optionsToolbar = toolbar;
 
 			refreshButton = new Button (new ImageView ("gtk-refresh", IconSize.Menu));
 			refreshButton.Clicked += OnButtonRefreshClick;
@@ -149,6 +156,73 @@ namespace MonoDevelop.TaskRunner.Gui
 				var pad = IdeApp.Workbench.GetPad<TaskRunnerExplorerPad> ();
 				pad.BringToFront (false);
 			}
+		}
+
+		void TaskRunnerSelected (TaskRunnerInformation task)
+		{
+			RemoveExistingOptionButtons ();
+			AddOptionsButton (task);
+		}
+
+		void RemoveExistingOptionButtons ()
+		{
+			if (separator != null) {
+				optionsToolbar.Remove (separator);
+				separator.Dispose ();
+				separator = null;
+			}
+
+			foreach (ToggleButton button in optionButtons) {
+				button.Clicked -= OptionButtonClicked;
+				optionsToolbar.Remove (button);
+				button.Dispose ();
+			}
+
+			optionButtons.Clear ();
+		}
+
+		void AddOptionsButton (TaskRunnerInformation task)
+		{
+			if (task == null || !task.Options.Any ())
+				return;
+
+			separator = new HSeparator ();
+			optionsToolbar.Add (separator);
+
+			foreach (ITaskRunnerOption option in task.Options) {
+				var button = new ToggleButton ();
+				button.Name = option.Name;
+				button.TooltipText = option.GetTooltipText ();
+				button.Active = option.Checked;
+				AddIcon (button, option.Icon);
+				button.Data ["option"] = option;
+				button.Clicked += OptionButtonClicked;
+
+				optionButtons.Add (button);
+				optionsToolbar.Add (button);
+			}
+
+			optionsToolbar.ShowAll ();
+		}
+
+		void AddIcon (ToggleButton button, IconId icon)
+		{
+			if (icon.IsNull)
+				icon = Ide.Gui.Stock.Options;
+
+			var hbox = new HBox ();
+			hbox.Homogeneous = false;
+			hbox.Spacing = 2;
+			var imageView = new ImageView (ImageService.GetIcon (icon, IconSize.Menu));
+			hbox.PackStart (imageView);
+			button.Child = hbox;
+		}
+
+		void OptionButtonClicked (object sender, EventArgs e)
+		{
+			var button = (ToggleButton)sender;
+			var option = (ITaskRunnerOption)button.Data ["option"];
+			option.Checked = button.Active;
 		}
 	}
 }
