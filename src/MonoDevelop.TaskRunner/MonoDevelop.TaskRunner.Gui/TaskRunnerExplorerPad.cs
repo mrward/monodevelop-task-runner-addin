@@ -115,25 +115,28 @@ namespace MonoDevelop.TaskRunner.Gui
 			widget.AddTasks (workspace.GroupedTasks);
 		}
 
-		void RunTask (ITaskRunnerNode taskRunnerNode)
+		void RunTask (ITaskRunnerNode taskRunnerNode, IEnumerable<ITaskRunnerOption> options)
 		{
 			try {
-				RunTaskAsync (taskRunnerNode).Ignore ();
+				var task = new TaskRunnerWithOptions (taskRunnerNode, options);
+				RunTaskAsync (task).Ignore ();
 			} catch (Exception ex) {
 				LoggingService.LogInfo ("TaskRunnerExplorerPad.RunTask error", ex);
 			}
 		}
 
-		public async Task<ITaskRunnerCommandResult> RunTaskAsync (ITaskRunnerNode taskRunnerNode, bool clearConsole = true)
+		public async Task<ITaskRunnerCommandResult> RunTaskAsync (TaskRunnerWithOptions task, bool clearConsole = true)
 		{
 			Runtime.AssertMainThread ();
 
-			widget.OpenTaskOutputTab (taskRunnerNode.Name);
+			widget.OpenTaskOutputTab (task.TaskRunner.Name);
 
 			OutputProgressMonitor progressMonitor = widget.GetProgressMonitor (clearConsole);
 
+			task.ApplyOptionsToCommand ();
+
 			var context = new TaskRunnerCommandContext (progressMonitor);
-			var result = await taskRunnerNode.Invoke (context);
+			var result = await task.TaskRunner.Invoke (context);
 			widget.ShowResult (result);
 			return result;
 		}

@@ -56,7 +56,7 @@ namespace MonoDevelop.TaskRunner.Gui
 			bindingsTreeView.ButtonPressed += BindingsTreeViewButtonPressed;
 		}
 
-		public Action<ITaskRunnerNode> OnRunTask = node => { };
+		public Action<ITaskRunnerNode, IEnumerable<ITaskRunnerOption>> OnRunTask = (node, options) => { };
 		public Action<TaskRunnerInformation, ITaskRunnerNode, TaskRunnerBindEvent> OnToggleBinding =
 			(info, node, bindEvent) => { };
 
@@ -286,7 +286,7 @@ namespace MonoDevelop.TaskRunner.Gui
 		void RunTask ()
 		{
 			if (CanRunSelectedTask ()) {
-				OnRunTask (selectedTaskRunnerNode.TaskRunner);
+				OnRunTask (selectedTaskRunnerNode.TaskRunner, selectedTaskRunnerNode.TaskInfo.Options);
 			}
 		}
 

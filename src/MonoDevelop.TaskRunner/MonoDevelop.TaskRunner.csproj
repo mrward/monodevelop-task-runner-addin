@@ -91,6 +91,7 @@
     </Compile>
     <Compile Include="MonoDevelop.TaskRunner\TaskRunnerExplorerOptions.cs" />
     <Compile Include="MonoDevelop.TaskRunner\ITaskRunnerOptionExtensions.cs" />
+    <Compile Include="MonoDevelop.TaskRunner\TaskRunnerWithOptions.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\MonoDevelop.TaskRunner.addin.xml" />

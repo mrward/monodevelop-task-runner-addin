@@ -57,7 +57,7 @@ namespace MonoDevelop.TaskRunner
 		public IWorkspaceFileObject WorkspaceFileObject { get; private set; }
 		public IEnumerable<TaskRunnerInformation> Tasks { get; private set; }
 
-		public IEnumerable<ITaskRunnerNode> GetTasks (TaskRunnerBindEvent bindEvent)
+		public IEnumerable<TaskRunnerWithOptions> GetTasks (TaskRunnerBindEvent bindEvent)
 		{
 			foreach (TaskRunnerInformation task in Tasks) {
 				foreach (TaskRunnerBindingInformation binding in task.Bindings) {
@@ -65,7 +65,7 @@ namespace MonoDevelop.TaskRunner
 						foreach (string taskName in binding.GetTasks ()) {
 							ITaskRunnerNode node = task.GetInvokableTask (taskName);
 							if (node != null) {
-								yield return node;
+								yield return new TaskRunnerWithOptions (node, task.Options);
 							}
 						}
 					}

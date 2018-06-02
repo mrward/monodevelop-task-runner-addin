@@ -1,5 +1,5 @@
 ﻿//
-// TaskRunnerCommandService.cs
+// TaskRunnerWithOptions.cs
 //
 // Author:
 //       Matt Ward <matt.ward@microsoft.com>
@@ -24,53 +24,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Threading.Tasks;
+using System;
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TaskRunnerExplorer;
-using MonoDevelop.Core;
-using MonoDevelop.Core.Execution;
+using System.Text;
 
 namespace MonoDevelop.TaskRunner
 {
-	class TaskRunnerCommandService : ITaskRunnerCommandService
+	class TaskRunnerWithOptions
 	{
-		ProcessAsyncOperation currentOperation;
-		OutputProgressMonitor outputProgressMonitor;
-
-		public TaskRunnerCommandService (OutputProgressMonitor outputProgressMonitor)
+		public TaskRunnerWithOptions (ITaskRunnerNode taskRunner, IEnumerable<ITaskRunnerOption> options)
 		{
-			this.outputProgressMonitor = outputProgressMonitor;
+			TaskRunner = taskRunner;
+			Options = options;
 		}
 
-		public async Task<ITaskRunnerCommandResult> ExecuteCommand (ITaskRunnerCommand command)
+		public ITaskRunnerNode TaskRunner { get; }
+		public IEnumerable<ITaskRunnerOption> Options { get; }
+
+		public void ApplyOptionsToCommand ()
 		{
-			using (var monitor = new TaskRunnerProgressMonitor (outputProgressMonitor)) {
-				monitor.Log.WriteLine (command.ToCommandLine ());
-
-				var result = Runtime.ProcessService.StartConsoleProcess (
-					command.Executable,
-					command.GetFullArgs (),
-					command.WorkingDirectory,
-					monitor.Console);
-
-				currentOperation = result;
-
-				await result.Task;
-
-				currentOperation = null;
-
-				return new TaskRunnerCommandResult {
-					StandardOutput = monitor.GetStandardOutputText (),
-					StandardError = monitor.GetStandardErrorText (),
-					ExitCode = result.ExitCode
-				};
-			}
+			TaskRunner.Command.Options = BuildOptions ();
 		}
 
-		public void Stop ()
+		string BuildOptions ()
 		{
-			if (currentOperation != null) {
-				currentOperation.Cancel ();
+			if (Options == null)
+				return null;
+
+			var optionsBuilder = new StringBuilder ();
+			foreach (ITaskRunnerOption option in Options) {
+				if (option.Checked) {
+					optionsBuilder.Append (option.Command);
+					optionsBuilder.Append (' ');
+				}
 			}
+			return optionsBuilder.ToString ().TrimEnd ();
 		}
 	}
 }

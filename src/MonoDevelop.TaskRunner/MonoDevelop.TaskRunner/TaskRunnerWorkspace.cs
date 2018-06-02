@@ -138,11 +138,11 @@ namespace MonoDevelop.TaskRunner
 			Refresh ();
 		}
 
-		public Task<ITaskRunnerCommandResult> RunTask (ITaskRunnerNode node)
+		public Task<ITaskRunnerCommandResult> RunTask (TaskRunnerWithOptions task)
 		{
 			return Runtime.RunInMainThread (() => {
 				TaskRunnerExplorerPad.Create ();
-				return TaskRunnerExplorerPad.Instance.RunTaskAsync (node, clearConsole: false);
+				return TaskRunnerExplorerPad.Instance.RunTaskAsync (task, clearConsole: false);
 			});
 		}
 
@@ -150,10 +150,10 @@ namespace MonoDevelop.TaskRunner
 		{
 			var buildResult = new BuildResult ();
 
-			foreach (ITaskRunnerNode node in tasks.GetTasks (bindEvent)) {
+			foreach (TaskRunnerWithOptions node in tasks.GetTasks (bindEvent)) {
 				ITaskRunnerCommandResult result = await TaskRunnerServices.Workspace.RunTask (node);
 				if (result.ExitCode != 0) {
-					buildResult.AddWarning (node, result);
+					buildResult.AddWarning (node.TaskRunner, result);
 				}
 			}
 

@@ -32,7 +32,18 @@ namespace MonoDevelop.TaskRunner
 	{
 		public static string ToCommandLine (this ITaskRunnerCommand command)
 		{
-			return $"{command.Executable} {command.Args}";
+			return $"{command.Executable} {command.GetFullArgs ()}";
+		}
+
+		/// <summary>
+		/// Includes the options as arguments if they are specified.
+		/// </summary>
+		public static string GetFullArgs (this ITaskRunnerCommand command)
+		{
+			if (command.Options == null)
+				return command.Args;
+
+			return command.Args + " " + command.Options;
 		}
 	}
 }
