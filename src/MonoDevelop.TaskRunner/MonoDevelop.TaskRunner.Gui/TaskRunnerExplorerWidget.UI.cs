@@ -27,6 +27,7 @@
 using Microsoft.VisualStudio.TaskRunnerExplorer;
 using MonoDevelop.Core;
 using Xwt;
+using Xwt.Drawing;
 
 namespace MonoDevelop.TaskRunner.Gui
 {
@@ -38,8 +39,10 @@ namespace MonoDevelop.TaskRunner.Gui
 		HPaned paned;
 		TreeStore tasksTreeStore;
 		DataField<string> taskRunnerNodeNameField;
+		DataField<Image> taskRunnerNodeIconField;
 		DataField<TaskRunnerTreeNode> taskRunnerField;
 		TreeStore bindingsTreeStore;
+		DataField<Image> bindingNodeIconField;
 		DataField<string> bindingNodeNameField;
 		DataField<TaskBindingTreeNode> bindingNodeField;
 		TaskBindingTreeNode beforeBuildBindingNode;
@@ -65,14 +68,24 @@ namespace MonoDevelop.TaskRunner.Gui
 			tasksVBox.PackStart (tasksTreeView, true, true);
 
 			taskRunnerField = new DataField<TaskRunnerTreeNode> ();
+			taskRunnerNodeIconField = new DataField<Image> ();
 			taskRunnerNodeNameField = new DataField<string> ();
-			tasksTreeStore = new TreeStore (taskRunnerNodeNameField, taskRunnerField);
+			tasksTreeStore = new TreeStore (
+				taskRunnerNodeIconField,
+				taskRunnerNodeNameField,
+				taskRunnerField);
 			tasksTreeView.DataSource = tasksTreeStore;
 
 			var column = new ListViewColumn ();
+			var imageCellView = new ImageCellView ();
+			imageCellView.ImageField = taskRunnerNodeIconField;
+			column.Views.Add (imageCellView, false);
+			tasksTreeView.Columns.Add (column);
+
+			column = new ListViewColumn ();
 			var textCellView = new TextCellView ();
 			textCellView.MarkupField = taskRunnerNodeNameField;
-			column.Views.Add (textCellView);
+			column.Views.Add (textCellView, false);
 			tasksTreeView.Columns.Add (column);
 
 			notebook = new Notebook ();
@@ -85,14 +98,24 @@ namespace MonoDevelop.TaskRunner.Gui
 			notebook.Add (bindingsTreeView, GettextCatalog.GetString ("Bindings"));
 
 			bindingNodeNameField = new DataField<string> ();
+			bindingNodeIconField = new DataField<Image> ();
 			bindingNodeField = new DataField<TaskBindingTreeNode> ();
-			bindingsTreeStore = new TreeStore (bindingNodeNameField, bindingNodeField);
+			bindingsTreeStore = new TreeStore (
+				bindingNodeIconField,
+				bindingNodeNameField,
+				bindingNodeField);
 			bindingsTreeView.DataSource = bindingsTreeStore;
+
+			column = new ListViewColumn ();
+			var bindingImageCellView = new ImageCellView ();
+			bindingImageCellView.ImageField = bindingNodeIconField;
+			column.Views.Add (bindingImageCellView, false);
+			bindingsTreeView.Columns.Add (column);
 
 			column = new ListViewColumn ();
 			textCellView = new TextCellView ();
 			textCellView.MarkupField = bindingNodeNameField;
-			column.Views.Add (textCellView);
+			column.Views.Add (textCellView, false);
 			bindingsTreeView.Columns.Add (column);
 
 			AddBindingsTreeNodes ();

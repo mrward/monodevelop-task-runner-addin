@@ -27,6 +27,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TaskRunnerExplorer;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.TaskRunner.Gui
 {
@@ -39,6 +40,7 @@ namespace MonoDevelop.TaskRunner.Gui
 		{
 			taskRunnerInfo = task;
 			Name = task.Name;
+			Icon = task.Icon;
 		}
 
 		public TaskRunnerTreeNode (TaskRunnerInformation task, ITaskRunnerNode node, bool bold)
@@ -47,6 +49,7 @@ namespace MonoDevelop.TaskRunner.Gui
 			taskRunnerNode = node;
 
 			Name = taskRunnerNode.Name ?? string.Empty;
+			Icon = task.Icon;
 
 			if (bold) {
 				Name = Name.ToBoldMarkup ();
@@ -54,6 +57,7 @@ namespace MonoDevelop.TaskRunner.Gui
 		}
 
 		public string Name { get; private set; }
+		public IconId Icon { get; private set; }
 
 		public bool IsInvokable {
 			get {

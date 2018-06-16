@@ -54,6 +54,7 @@ namespace MonoDevelop.TaskRunner.Gui
 
 			BindEvent = binding.BindEvent;
 			Name = task.Name;
+			Icon = task.Icon;
 			hasChildren = true;
 		}
 
@@ -111,6 +112,7 @@ namespace MonoDevelop.TaskRunner.Gui
 
 		public TaskRunnerBindEvent BindEvent { get; private set; }
 		public string Name { get; private set; }
+		public IconId Icon { get; private set; }
 		public bool IsRootNode { get; private set; }
 		public bool IsTaskNameNode { get; private set; }
 

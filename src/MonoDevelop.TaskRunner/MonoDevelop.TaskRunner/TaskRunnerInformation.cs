@@ -24,10 +24,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TaskRunnerExplorer;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.TaskRunner
@@ -57,6 +57,7 @@ namespace MonoDevelop.TaskRunner
 		public TaskRunnerBindings Bindings { get; private set; }
 
 		public ITaskRunnerNode TaskHierarchy => Config?.TaskHierarchy;
+		public IconId Icon => Config?.Icon ?? IconId.Null;
 
 		public bool IsBindingEnabled (TaskRunnerBindEvent bindEvent, ITaskRunnerNode taskRunnerNode)
 		{

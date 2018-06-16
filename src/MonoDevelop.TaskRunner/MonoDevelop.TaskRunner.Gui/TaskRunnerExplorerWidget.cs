@@ -35,6 +35,7 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui.Components;
 using Xwt;
+using Xwt.Drawing;
 
 namespace MonoDevelop.TaskRunner.Gui
 {
@@ -107,6 +108,10 @@ namespace MonoDevelop.TaskRunner.Gui
 			var rootNode = new TaskRunnerTreeNode (task);
 
 			TreeNavigator navigator = tasksTreeStore.AddNode ();
+			IconId icon = rootNode.Icon;
+			if (!icon.IsNull) {
+				navigator.SetValue (taskRunnerNodeIconField, ImageService.GetIcon (icon, Gtk.IconSize.Menu));
+			}
 			navigator.SetValue (taskRunnerNodeNameField, rootNode.Name);
 			navigator.SetValue (taskRunnerField, rootNode);
 
@@ -186,6 +191,10 @@ namespace MonoDevelop.TaskRunner.Gui
 		{
 			foreach (TaskBindingTreeNode childNode in node.CreateChildNodes (task, binding)) {
 				TreeNavigator childNavigator = navigator.AddChild ();
+
+				if (!childNode.Icon.IsNull) {
+					childNavigator.SetValue (bindingNodeIconField, ImageService.GetIcon (childNode.Icon, Gtk.IconSize.Menu));
+				}
 				childNavigator.SetValue (bindingNodeNameField, childNode.Name);
 				childNavigator.SetValue (bindingNodeField, childNode);
 

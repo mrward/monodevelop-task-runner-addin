@@ -25,13 +25,13 @@
 // THE SOFTWARE.
 
 using System;
+using MonoDevelop.Core;
 
 namespace Microsoft.VisualStudio.TaskRunnerExplorer
 {
 	public interface ITaskRunnerConfig : IDisposable
 	{
-		// Not supported
-		//ImageSource Icon { get; }
+		IconId Icon { get; }
 
 		ITaskRunnerNode TaskHierarchy { get; }
 		string LoadBindings (string configPath);

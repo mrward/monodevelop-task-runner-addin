@@ -19,6 +19,8 @@ namespace MonoDevelop.TestTaskRunner
 
 		public ITaskRunnerNode TaskHierarchy { get; private set; }
 
+		public IconId Icon => new IconId ("md-console");
+
 		public void Dispose()
 		{
 		}
