@@ -38,10 +38,12 @@ namespace MonoDevelop.TaskRunner.Gui
 		TreeView bindingsTreeView;
 		HPaned paned;
 		TreeStore tasksTreeStore;
+		TaskCellView taskCellView;
 		DataField<string> taskRunnerNodeNameField;
 		DataField<Image> taskRunnerNodeIconField;
 		DataField<TaskRunnerTreeNode> taskRunnerField;
 		TreeStore bindingsTreeStore;
+		TaskCellView bindingCellView;
 		DataField<Image> bindingNodeIconField;
 		DataField<string> bindingNodeNameField;
 		DataField<TaskBindingTreeNode> bindingNodeField;
@@ -76,16 +78,12 @@ namespace MonoDevelop.TaskRunner.Gui
 				taskRunnerField);
 			tasksTreeView.DataSource = tasksTreeStore;
 
-			var column = new ListViewColumn ();
-			var imageCellView = new ImageCellView ();
-			imageCellView.ImageField = taskRunnerNodeIconField;
-			column.Views.Add (imageCellView, false);
-			tasksTreeView.Columns.Add (column);
+			taskCellView = new TaskCellView {
+				ImageField = taskRunnerNodeIconField,
+				NameField = taskRunnerNodeNameField
+			};
 
-			column = new ListViewColumn ();
-			var textCellView = new TextCellView ();
-			textCellView.MarkupField = taskRunnerNodeNameField;
-			column.Views.Add (textCellView, false);
+			var column = new ListViewColumn ("Task", taskCellView);
 			tasksTreeView.Columns.Add (column);
 
 			notebook = new Notebook ();
@@ -106,16 +104,12 @@ namespace MonoDevelop.TaskRunner.Gui
 				bindingNodeField);
 			bindingsTreeView.DataSource = bindingsTreeStore;
 
-			column = new ListViewColumn ();
-			var bindingImageCellView = new ImageCellView ();
-			bindingImageCellView.ImageField = bindingNodeIconField;
-			column.Views.Add (bindingImageCellView, false);
-			bindingsTreeView.Columns.Add (column);
+			bindingCellView = new TaskCellView {
+				ImageField = bindingNodeIconField,
+				NameField = bindingNodeNameField
+			};
 
-			column = new ListViewColumn ();
-			textCellView = new TextCellView ();
-			textCellView.MarkupField = bindingNodeNameField;
-			column.Views.Add (textCellView, false);
+			column = new ListViewColumn ("Binding", bindingCellView);
 			bindingsTreeView.Columns.Add (column);
 
 			AddBindingsTreeNodes ();
