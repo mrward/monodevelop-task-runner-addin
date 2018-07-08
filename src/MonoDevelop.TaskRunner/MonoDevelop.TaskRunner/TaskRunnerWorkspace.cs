@@ -50,6 +50,7 @@ namespace MonoDevelop.TaskRunner
 			IdeApp.Workspace.SolutionLoaded += SolutionLoaded;
 			IdeApp.Workspace.SolutionUnloaded += SolutionUnloaded;
 			IdeApp.Workspace.FileAddedToProject += FileAddedToProject;
+			FileService.FileRemoved += FileRemoved;
 		}
 
 		public event EventHandler TasksChanged;
@@ -242,6 +243,53 @@ namespace MonoDevelop.TaskRunner
 
 			groupedTasks = groupedTasks.Add (groupedTask);
 			OnTasksChanged ();
+		}
+
+		void FileRemoved (object sender, FileEventArgs eventArgs)
+		{
+			var files = eventArgs
+				.Where (HasTaskRunner)
+				.Select (fileEventInfo => fileEventInfo.FileName)
+				.ToList ();
+			if (!files.Any ())
+				return;
+
+			RemoveTaskRunners (files);
+		}
+
+		void RemoveTaskRunners (IEnumerable<FilePath> files)
+		{
+			bool modified = false;
+
+			var groupsToRemove = new List<GroupedTaskRunnerInformation> ();
+			foreach (var groupedTask in groupedTasks) {
+				var tasksToRemove = new List<TaskRunnerInformation> ();
+				foreach (var task in groupedTask.Tasks) {
+					if (files.Contains (task.ConfigFile)) {
+						tasksToRemove.Add (task);
+					}
+				}
+				if (tasksToRemove.Any ()) {
+					modified = true;
+					groupedTask.RemoveTasks (tasksToRemove);
+					if (!groupedTask.Tasks.Any ()) {
+						groupsToRemove.Add (groupedTask);
+					}
+				}
+			}
+
+			if (groupsToRemove.Any ()) {
+				groupedTasks = groupedTasks.RemoveAll (groupsToRemove.Contains);
+			}
+
+			if (modified) {
+				OnTasksChanged ();
+			}
+		}
+
+		bool HasTaskRunner (FileEventInfo eventInfo)
+		{
+			return taskRunnerProvider.GetTaskRunner (eventInfo.FileName) != null;
 		}
 	}
 }

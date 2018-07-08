@@ -87,5 +87,10 @@ namespace MonoDevelop.TaskRunner
 		{
 			tasks.Add (task);
 		}
+
+		public void RemoveTasks (IEnumerable<TaskRunnerInformation> tasksToRemove)
+		{
+			tasks.RemoveAll (tasksToRemove.Contains);
+		}
 	}
 }
