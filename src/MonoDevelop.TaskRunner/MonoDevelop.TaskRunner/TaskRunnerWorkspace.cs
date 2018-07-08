@@ -49,6 +49,7 @@ namespace MonoDevelop.TaskRunner
 
 			IdeApp.Workspace.SolutionLoaded += SolutionLoaded;
 			IdeApp.Workspace.SolutionUnloaded += SolutionUnloaded;
+			IdeApp.Workspace.FileAddedToProject += FileAddedToProject;
 		}
 
 		public event EventHandler TasksChanged;
@@ -203,6 +204,44 @@ namespace MonoDevelop.TaskRunner
 				false,
 				pad,
 				true);
+		}
+
+		void FileAddedToProject (object sender, ProjectFileEventArgs eventArgs)
+		{
+			CheckTaskRunnerAvailableForFile (eventArgs).Ignore ();
+		}
+
+		async Task CheckTaskRunnerAvailableForFile (ProjectFileEventArgs eventArgs)
+		{
+			var fileEvents = eventArgs.Where (ShouldCheckTaskRunnerProviderForFile);
+
+			foreach (ProjectFileEventInfo fileEventInfo in fileEvents) {
+				ITaskRunner runner = taskRunnerProvider.GetTaskRunner (fileEventInfo.ProjectFile.FilePath);
+				if (runner != null) {
+					await AddTaskRunner (runner, fileEventInfo.ProjectFile.FilePath, fileEventInfo.Project);
+				}
+			}
+		}
+
+		static bool ShouldCheckTaskRunnerProviderForFile (ProjectFileEventInfo fileEventInfo)
+		{
+			return fileEventInfo.ProjectFile.FilePath.ParentDirectory == fileEventInfo.Project.BaseDirectory;
+		}
+
+		async Task AddTaskRunner (ITaskRunner runner, FilePath configFile, Project project)
+		{
+			ITaskRunnerConfig config = await runner.ParseConfig (null, configFile);
+			var info = new TaskRunnerInformation (project, config, runner.Options, configFile);
+
+			var groupedTask = GetGroupedTask (project);
+			if (groupedTask == null) {
+				groupedTask = new GroupedTaskRunnerInformation (project);
+			}
+
+			groupedTask.AddTask (info);
+
+			groupedTasks = groupedTasks.Add (groupedTask);
+			OnTasksChanged ();
 		}
 	}
 }

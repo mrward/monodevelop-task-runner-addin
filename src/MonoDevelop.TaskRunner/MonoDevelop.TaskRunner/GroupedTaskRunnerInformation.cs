@@ -35,13 +35,20 @@ namespace MonoDevelop.TaskRunner
 {
 	class GroupedTaskRunnerInformation
 	{
+		List<TaskRunnerInformation> tasks;
+
 		public GroupedTaskRunnerInformation (
 			IWorkspaceFileObject workspaceFileObject,
 			IEnumerable<TaskRunnerInformation> tasks)
 		{
 			WorkspaceFileObject = workspaceFileObject;
-			Tasks = tasks;
+			this.tasks = tasks.ToList ();
 			Name = GetName (workspaceFileObject);
+		}
+
+		public GroupedTaskRunnerInformation (IWorkspaceFileObject workspaceFileObject)
+			: this (workspaceFileObject, Enumerable.Empty<TaskRunnerInformation> ())
+		{
 		}
 
 		static string GetName (IWorkspaceFileObject workspaceFileObject)
@@ -55,7 +62,10 @@ namespace MonoDevelop.TaskRunner
 
 		public string Name { get; private set; }
 		public IWorkspaceFileObject WorkspaceFileObject { get; private set; }
-		public IEnumerable<TaskRunnerInformation> Tasks { get; private set; }
+
+		public IEnumerable<TaskRunnerInformation> Tasks {
+			get { return tasks; }
+		}
 
 		public IEnumerable<TaskRunnerWithOptions> GetTasks (TaskRunnerBindEvent bindEvent)
 		{
@@ -71,6 +81,11 @@ namespace MonoDevelop.TaskRunner
 					}
 				}
 			}
+		}
+
+		public void AddTask (TaskRunnerInformation task)
+		{
+			tasks.Add (task);
 		}
 	}
 }
