@@ -229,6 +229,7 @@ namespace MonoDevelop.TaskRunner.Gui
 			}
 
 			taskOutputTab.Label = name;
+			taskOutputTab.Child.Tag = name;
 			notebook.CurrentTab = taskOutputTab;
 		}
 
@@ -236,6 +237,22 @@ namespace MonoDevelop.TaskRunner.Gui
 		{
 			string message = GettextCatalog.GetString ("Process terminated with code {0}{1}", result.ExitCode, Environment.NewLine);
 			logView.WriteText (null, message);
+		}
+
+		public void ShowRunningStatus ()
+		{
+			if (taskOutputTab == null)
+				return;
+
+			taskOutputTab.Label = GettextCatalog.GetString ("{0} (Running)", taskOutputTab.Child.Tag);
+		}
+
+		public void HideRunningStatus ()
+		{
+			if (taskOutputTab == null)
+				return;
+
+			taskOutputTab.Label = (string)taskOutputTab.Child.Tag;
 		}
 
 		public void ClearLog ()

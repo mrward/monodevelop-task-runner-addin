@@ -129,16 +129,22 @@ namespace MonoDevelop.TaskRunner.Gui
 		{
 			Runtime.AssertMainThread ();
 
-			widget.OpenTaskOutputTab (task.TaskRunner.Name);
+			try {
+				widget.OpenTaskOutputTab (task.TaskRunner.Name);
 
-			OutputProgressMonitor progressMonitor = widget.GetProgressMonitor (clearConsole);
+				OutputProgressMonitor progressMonitor = widget.GetProgressMonitor (clearConsole);
 
-			task.ApplyOptionsToCommand ();
+				task.ApplyOptionsToCommand ();
 
-			var context = new TaskRunnerCommandContext (progressMonitor);
-			var result = await task.TaskRunner.Invoke (context);
-			widget.ShowResult (result);
-			return result;
+				widget.ShowRunningStatus ();
+
+				var context = new TaskRunnerCommandContext (progressMonitor);
+				var result = await task.TaskRunner.Invoke (context);
+				widget.ShowResult (result);
+				return result;
+			} finally {
+				widget.HideRunningStatus ();
+			}
 		}
 
 		void ToggleBinding (TaskRunnerInformation taskRunnerInfo, ITaskRunnerNode node, TaskRunnerBindEvent bindEvent)
