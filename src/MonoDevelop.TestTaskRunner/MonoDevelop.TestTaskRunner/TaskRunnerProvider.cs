@@ -49,9 +49,9 @@ namespace MonoDevelop.TestTaskRunner
 
 			var root = new TaskRunnerNode ("My Config");
 
-			root.Children.Add (new TaskRunnerNode ("Task 1", true) {
+			root.Children.Add (new TaskRunnerNode ("TSC watch", true) {
 				Description = "Executes Task 1.",
-				Command = new TaskRunnerCommand (cwd, "bash", "-c \"echo Task 1\"")
+				Command = new TaskRunnerCommand (cwd, "tsc", "-p /Users/matt/Projects/Tests/tsc-test3234234 --watch")
 			});
 
 			root.Children.Add (new TaskRunnerNode ("Task 2", true) {

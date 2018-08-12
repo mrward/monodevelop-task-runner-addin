@@ -93,6 +93,7 @@
     <Compile Include="MonoDevelop.TaskRunner\ITaskRunnerOptionExtensions.cs" />
     <Compile Include="MonoDevelop.TaskRunner\TaskRunnerWithOptions.cs" />
     <Compile Include="MonoDevelop.TaskRunner.Gui\TaskCellView.cs" />
+    <Compile Include="MonoDevelop.TaskRunner\RunningTaskInformation.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\MonoDevelop.TaskRunner.addin.xml" />

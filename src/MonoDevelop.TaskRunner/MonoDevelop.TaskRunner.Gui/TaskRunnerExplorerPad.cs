@@ -44,6 +44,7 @@ namespace MonoDevelop.TaskRunner.Gui
 		TaskRunnerExplorerWidget widget;
 		Button refreshButton;
 		Button clearButton;
+		Button stopButton;
 		HSeparator separator;
 		List<ToggleButton> optionButtons = new List<ToggleButton> ();
 		DockItemToolbar optionsToolbar;
@@ -91,6 +92,11 @@ namespace MonoDevelop.TaskRunner.Gui
 
 			toolbar = window.GetToolbar (DockPositionType.Right);
 
+			stopButton = new Button (new ImageView (Ide.Gui.Stock.Stop, IconSize.Menu));
+			stopButton.Clicked += OnStopButtonClick;
+			stopButton.TooltipText = GettextCatalog.GetString ("Stop selected task");
+			toolbar.Add (stopButton);
+
 			clearButton = new Button (new ImageView (Ide.Gui.Stock.Broom, IconSize.Menu));
 			clearButton.Clicked += OnClearButtonClick;
 			clearButton.TooltipText = GettextCatalog.GetString ("Clear Output");
@@ -129,21 +135,27 @@ namespace MonoDevelop.TaskRunner.Gui
 		{
 			Runtime.AssertMainThread ();
 
-			try {
-				widget.OpenTaskOutputTab (task.TaskRunner.Name);
+			RunningTaskInformation runningTask = null;
 
+			try {
 				OutputProgressMonitor progressMonitor = widget.GetProgressMonitor (clearConsole);
 
 				task.ApplyOptionsToCommand ();
 
-				widget.ShowRunningStatus ();
-
 				var context = new TaskRunnerCommandContext (progressMonitor);
+				runningTask = new RunningTaskInformation (context, task);
+				TaskRunnerServices.Workspace.AddRunningTask (runningTask);
+
+				widget.OpenTaskOutputTab (runningTask);
+
 				var result = await task.TaskRunner.Invoke (context);
 				widget.ShowResult (result);
 				return result;
 			} finally {
-				widget.HideRunningStatus ();
+				if (runningTask != null) {
+					TaskRunnerServices.Workspace.RemoveRunningTask (runningTask);
+					widget.HideRunningStatus (runningTask);
+				}
 			}
 		}
 
@@ -232,6 +244,14 @@ namespace MonoDevelop.TaskRunner.Gui
 			var button = (ToggleButton)sender;
 			var option = (ITaskRunnerOption)button.Data ["option"];
 			option.Checked = button.Active;
+		}
+
+		void OnStopButtonClick (object sender, EventArgs e)
+		{
+			RunningTaskInformation runningTask = widget.GetRunningTaskFromCurrentTab ();
+			if (runningTask != null) {
+				runningTask.Stop ();
+			}
 		}
 	}
 }

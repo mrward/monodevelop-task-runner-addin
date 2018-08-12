@@ -69,6 +69,7 @@ namespace MonoDevelop.TaskRunner
 		public void Stop ()
 		{
 			if (currentOperation != null) {
+				outputProgressMonitor.Log.WriteLine (GettextCatalog.GetString ("Stopping task..."));
 				currentOperation.Cancel ();
 			}
 		}

@@ -42,6 +42,7 @@ namespace MonoDevelop.TaskRunner
 	{
 		TaskRunnerProvider taskRunnerProvider;
 		ImmutableList<GroupedTaskRunnerInformation> groupedTasks = ImmutableList<GroupedTaskRunnerInformation>.Empty;
+		List<RunningTaskInformation> runningTasks = new List<RunningTaskInformation> ();
 
 		public TaskRunnerWorkspace (TaskRunnerProvider taskRunnerProvider)
 		{
@@ -103,6 +104,7 @@ namespace MonoDevelop.TaskRunner
 		void SolutionUnloaded (object sender, SolutionEventArgs e)
 		{
 			try {
+				StopRunningTasks ();
 				RemoveTasks (e.Solution);
 			} catch (Exception ex) {
 				LoggingService.LogError ("TaskRunnerWorkspace SolutionUnloaded error", ex);
@@ -290,6 +292,34 @@ namespace MonoDevelop.TaskRunner
 		bool HasTaskRunner (FileEventInfo eventInfo)
 		{
 			return taskRunnerProvider.GetTaskRunner (eventInfo.FileName) != null;
+		}
+
+		public void AddRunningTask (RunningTaskInformation runningTask)
+		{
+			lock (runningTasks) {
+				runningTasks.Add (runningTask);
+			}
+		}
+
+		public void RemoveRunningTask (RunningTaskInformation runningTask)
+		{
+			lock (runningTasks) {
+				runningTasks.Remove (runningTask);
+			}
+		}
+
+		void StopRunningTasks ()
+		{
+			lock (runningTasks) {
+				foreach (RunningTaskInformation task in runningTasks.ToArray ()) {
+					try {
+						runningTasks.Remove (task);
+						task.Stop ();
+					} catch (Exception ex) {
+						LoggingService.LogError ("Failed to stop running task.", ex);
+					}
+				}
+			}
 		}
 	}
 }

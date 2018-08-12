@@ -215,21 +215,29 @@ namespace MonoDevelop.TaskRunner.Gui
 
 		public OutputProgressMonitor GetProgressMonitor (bool clearConsole = true)
 		{
+			CreateLogView ();
 			return logView.GetProgressMonitor (clearConsole);
 		}
 
-		public void OpenTaskOutputTab (string name)
+		void CreateLogView ()
+		{
+			if (logView != null)
+				return;
+
+			logView = new LogView ();
+			logView.ShowAll ();
+		}
+
+		public void OpenTaskOutputTab (RunningTaskInformation task)
 		{
 			if (taskOutputTab == null) {
-				logView = new LogView ();
-				logView.ShowAll ();
 				var logViewWidget = Toolkit.CurrentEngine.WrapWidget (logView, NativeWidgetSizing.DefaultPreferredSize);
-				notebook.Add (logViewWidget, name);
+				notebook.Add (logViewWidget, task.Name);
 				taskOutputTab = notebook.Tabs [notebook.Tabs.Count - 1];
 			}
 
-			taskOutputTab.Label = name;
-			taskOutputTab.Child.Tag = name;
+			taskOutputTab.Label = GettextCatalog.GetString ("{0} (Running)", task.Name);
+			taskOutputTab.Child.Tag = task;
 			notebook.CurrentTab = taskOutputTab;
 		}
 
@@ -239,20 +247,17 @@ namespace MonoDevelop.TaskRunner.Gui
 			logView.WriteText (null, message);
 		}
 
-		public void ShowRunningStatus ()
+		public RunningTaskInformation GetRunningTaskFromCurrentTab ()
 		{
-			if (taskOutputTab == null)
-				return;
-
-			taskOutputTab.Label = GettextCatalog.GetString ("{0} (Running)", taskOutputTab.Child.Tag);
+			return taskOutputTab?.Child?.Tag as RunningTaskInformation;
 		}
 
-		public void HideRunningStatus ()
+		public void HideRunningStatus (RunningTaskInformation runningTask)
 		{
 			if (taskOutputTab == null)
 				return;
 
-			taskOutputTab.Label = (string)taskOutputTab.Child.Tag;
+			taskOutputTab.Label = runningTask.Name;
 		}
 
 		public void ClearLog ()
