@@ -43,6 +43,8 @@ namespace MonoDevelop.TaskRunner
 			get { return Task.TaskRunner.Name; }
 		}
 
+		public bool IsRunning { get; set; } = true;
+
 		public void Stop ()
 		{
 			Context.ExecutionService.Stop ();

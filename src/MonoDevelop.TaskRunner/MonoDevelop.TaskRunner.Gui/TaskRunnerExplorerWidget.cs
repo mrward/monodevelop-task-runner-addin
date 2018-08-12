@@ -35,14 +35,17 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Commands;
 using MonoDevelop.Ide.Gui.Components;
 using Xwt;
-using Xwt.Drawing;
 
 namespace MonoDevelop.TaskRunner.Gui
 {
 	partial class TaskRunnerExplorerWidget
 	{
 		TaskRunnerTreeNode selectedTaskRunnerNode;
-		LogView logView;
+
+		class TabInfo {
+			public RunningTaskInformation Task { get; set; }
+			public LogView LogView { get; set; }
+		}
 
 		public TaskRunnerExplorerWidget ()
 		{
@@ -70,7 +73,18 @@ namespace MonoDevelop.TaskRunner.Gui
 			projectsComboBox.Items.Clear ();
 			tasksTreeStore.Clear ();
 
-			logView?.Clear ();
+			ClearLogViews ();
+		}
+
+		void ClearLogViews ()
+		{
+			for (int i = 1; i < notebook.Tabs.Count; ++i) {
+				var existingTab = notebook.Tabs[i];
+				var tabInfo = existingTab.Child.Tag as TabInfo;
+				if (tabInfo != null) {
+					tabInfo.LogView.Clear ();
+				}
+			}
 		}
 
 		public void AddTasks (IEnumerable<GroupedTaskRunnerInformation> tasks)
@@ -213,56 +227,85 @@ namespace MonoDevelop.TaskRunner.Gui
 			navigator.SetValue (bindingNodeNameField, node.Name);
 		}
 
-		public OutputProgressMonitor GetProgressMonitor (bool clearConsole = true)
+		public NotebookTab GetTaskOutputTab (string name)
 		{
-			CreateLogView ();
-			return logView.GetProgressMonitor (clearConsole);
-		}
-
-		void CreateLogView ()
-		{
-			if (logView != null)
-				return;
-
-			logView = new LogView ();
-			logView.ShowAll ();
-		}
-
-		public void OpenTaskOutputTab (RunningTaskInformation task)
-		{
-			if (taskOutputTab == null) {
-				var logViewWidget = Toolkit.CurrentEngine.WrapWidget (logView, NativeWidgetSizing.DefaultPreferredSize);
-				notebook.Add (logViewWidget, task.Name);
-				taskOutputTab = notebook.Tabs [notebook.Tabs.Count - 1];
+			for (int i = 1; i < notebook.Tabs.Count; ++i) {
+				var existingTab = notebook.Tabs [i];
+				var tabInfo = existingTab.Child.Tag as TabInfo;
+				// Ignore running task tabs.
+				if (tabInfo?.Task?.IsRunning != true) {
+					return existingTab;
+				}
 			}
 
-			taskOutputTab.Label = GettextCatalog.GetString ("{0} (Running)", task.Name);
-			taskOutputTab.Child.Tag = task;
-			notebook.CurrentTab = taskOutputTab;
+			var logView = new LogView ();
+			logView.ShowAll ();
+			var logViewWidget = Toolkit.CurrentEngine.WrapWidget (logView, NativeWidgetSizing.DefaultPreferredSize);
+			notebook.Add (logViewWidget, name);
+
+			var tab = notebook.Tabs [notebook.Tabs.Count - 1];
+			tab.Child.Tag = new TabInfo {
+				LogView = logView
+			};
+			return tab;
 		}
 
-		public void ShowResult (ITaskRunnerCommandResult result)
+		public OutputProgressMonitor GetProgressMonitor (NotebookTab tab, bool clearConsole = true)
+		{
+			var tabInfo = tab.Child.Tag as TabInfo;
+			return tabInfo.LogView.GetProgressMonitor (clearConsole);
+		}
+
+		public void OpenTaskOutputTab (NotebookTab tab, RunningTaskInformation task)
+		{
+			tab.Label = GettextCatalog.GetString ("{0} (Running)", task.Name);
+			var tabInfo = tab.Child.Tag as TabInfo;
+			tabInfo.Task = task;
+
+			notebook.CurrentTab = tab;
+		}
+
+		public void ShowResult (NotebookTab tab, ITaskRunnerCommandResult result)
 		{
 			string message = GettextCatalog.GetString ("Process terminated with code {0}{1}", result.ExitCode, Environment.NewLine);
-			logView.WriteText (null, message);
+
+			var tabInfo = tab.Child.Tag as TabInfo;
+			tabInfo.LogView.WriteText (null, message);
 		}
 
 		public RunningTaskInformation GetRunningTaskFromCurrentTab ()
 		{
-			return taskOutputTab?.Child?.Tag as RunningTaskInformation;
+			var tabInfo = notebook.CurrentTab.Child?.Tag as TabInfo;
+			return tabInfo?.Task;
 		}
 
 		public void HideRunningStatus (RunningTaskInformation runningTask)
 		{
-			if (taskOutputTab == null)
-				return;
+			NotebookTab taskOutputTab = GetTab (runningTask);
+			if (taskOutputTab != null) {
+				taskOutputTab.Label = runningTask.Name;
+			}
+		}
 
-			taskOutputTab.Label = runningTask.Name;
+		NotebookTab GetTab (RunningTaskInformation runningTask)
+		{
+			for (int i = 1; i < notebook.Tabs.Count; ++i) {
+				var tab = notebook.Tabs [i];
+				var tabInfo = tab.Child.Tag as TabInfo;
+				if (runningTask == tabInfo.Task) {
+					return tab;
+				}
+			}
+			return null;
 		}
 
 		public void ClearLog ()
 		{
-			logView?.Clear ();
+			var tab = notebook.CurrentTab;
+			var tabInfo = tab.Child.Tag as TabInfo;
+			if (tabInfo != null) {
+				tabInfo.LogView.Clear ();
+			}
 		}
 
 		void TasksTreeViewRowActivated (object sender, TreeViewRowEventArgs e)

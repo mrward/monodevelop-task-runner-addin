@@ -52,7 +52,6 @@ namespace MonoDevelop.TaskRunner.Gui
 		TaskBindingTreeNode cleanBindingNode;
 		TaskBindingTreeNode projectOpenBindingNode;
 		Notebook notebook;
-		NotebookTab taskOutputTab;
 
 		void Build ()
 		{

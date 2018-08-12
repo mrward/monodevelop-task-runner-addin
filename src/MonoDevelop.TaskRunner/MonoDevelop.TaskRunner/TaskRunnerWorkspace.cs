@@ -305,6 +305,7 @@ namespace MonoDevelop.TaskRunner
 		{
 			lock (runningTasks) {
 				runningTasks.Remove (runningTask);
+				runningTask.IsRunning = false;
 			}
 		}
 
@@ -314,6 +315,7 @@ namespace MonoDevelop.TaskRunner
 				foreach (RunningTaskInformation task in runningTasks.ToArray ()) {
 					try {
 						runningTasks.Remove (task);
+						task.IsRunning = false;
 						task.Stop ();
 					} catch (Exception ex) {
 						LoggingService.LogError ("Failed to stop running task.", ex);

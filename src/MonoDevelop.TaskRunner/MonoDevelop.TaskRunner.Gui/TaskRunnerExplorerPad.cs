@@ -138,7 +138,8 @@ namespace MonoDevelop.TaskRunner.Gui
 			RunningTaskInformation runningTask = null;
 
 			try {
-				OutputProgressMonitor progressMonitor = widget.GetProgressMonitor (clearConsole);
+				Xwt.NotebookTab tab = widget.GetTaskOutputTab (task.TaskRunner.Name);
+				OutputProgressMonitor progressMonitor = widget.GetProgressMonitor (tab, clearConsole);
 
 				task.ApplyOptionsToCommand ();
 
@@ -146,10 +147,10 @@ namespace MonoDevelop.TaskRunner.Gui
 				runningTask = new RunningTaskInformation (context, task);
 				TaskRunnerServices.Workspace.AddRunningTask (runningTask);
 
-				widget.OpenTaskOutputTab (runningTask);
+				widget.OpenTaskOutputTab (tab, runningTask);
 
 				var result = await task.TaskRunner.Invoke (context);
-				widget.ShowResult (result);
+				widget.ShowResult (tab, result);
 				return result;
 			} finally {
 				if (runningTask != null) {
