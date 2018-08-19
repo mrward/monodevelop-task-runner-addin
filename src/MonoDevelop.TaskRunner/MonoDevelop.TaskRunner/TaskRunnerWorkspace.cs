@@ -232,11 +232,11 @@ namespace MonoDevelop.TaskRunner
 			var groupedTask = GetGroupedTask (project);
 			if (groupedTask == null) {
 				groupedTask = new GroupedTaskRunnerInformation (project);
+				groupedTasks = groupedTasks.Add (groupedTask);
 			}
 
 			groupedTask.AddTask (info);
 
-			groupedTasks = groupedTasks.Add (groupedTask);
 			OnTasksChanged ();
 		}
 
