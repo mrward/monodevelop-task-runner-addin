@@ -75,23 +75,40 @@ namespace MonoDevelop.TaskRunner
 			}
 		}
 
-		async Task<List<TaskRunnerInformation>> FindTasks (IWorkspaceFileObject workspaceFileObject)
+		public async Task<List<TaskRunnerInformation>> FindTasks (IWorkspaceFileObject workspaceFileObject)
 		{
 			List<TaskRunnerInformation> foundTasks = null;
+			var filesAdded = new HashSet<FilePath> ();
 
-			foreach (FilePath configFile in Directory.EnumerateFiles (workspaceFileObject.BaseDirectory)) {
-				ITaskRunner runner = taskRunnerProvider.GetTaskRunner (configFile);
-				if (runner != null) {
-					ITaskRunnerConfig config = await runner.ParseConfig (null, configFile);
-					var info = new TaskRunnerInformation (workspaceFileObject, config, runner.Options, configFile);
-					if (foundTasks == null) {
-						foundTasks = new List<TaskRunnerInformation> ();
+			foreach (FilePath configFile in GetFiles (workspaceFileObject)) {
+				if (!filesAdded.Contains (configFile)) {
+					ITaskRunner runner = taskRunnerProvider.GetTaskRunner (configFile);
+					if (runner != null) {
+						ITaskRunnerConfig config = await runner.ParseConfig (null, configFile);
+						var info = new TaskRunnerInformation (workspaceFileObject, config, runner.Options, configFile);
+						if (foundTasks == null) {
+							foundTasks = new List<TaskRunnerInformation> ();
+						}
+						foundTasks.Add (info);
+						filesAdded.Add (configFile);
 					}
-					foundTasks.Add (info);
 				}
 			}
 
 			return foundTasks;
+		}
+
+		IEnumerable<FilePath> GetFiles (IWorkspaceFileObject workspaceFileObject)
+		{
+			if (workspaceFileObject is Project project) {
+				foreach (ProjectFile file in project.Files) {
+					yield return file.FilePath;
+				}
+			}
+
+			foreach (FilePath configFile in Directory.EnumerateFiles (workspaceFileObject.BaseDirectory)) {
+				yield return configFile;
+			}
 		}
 	}
 }

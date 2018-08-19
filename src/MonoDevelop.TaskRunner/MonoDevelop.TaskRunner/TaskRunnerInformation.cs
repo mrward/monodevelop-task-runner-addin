@@ -45,7 +45,7 @@ namespace MonoDevelop.TaskRunner
 			Options = options;
 			ConfigFile = configFile;
 
-			Name = configFile.FileName;
+			Name = GetName ();
 			Bindings = new TaskRunnerBindings (Config, configFile);
 		}
 
@@ -98,6 +98,19 @@ namespace MonoDevelop.TaskRunner
 		public void SaveBindings ()
 		{
 			Bindings.Save ();
+		}
+
+		string GetName ()
+		{
+			if (ConfigFile.ParentDirectory == WorkspaceFileObject.BaseDirectory) {
+				return ConfigFile.FileName;
+			}
+
+			if (!ConfigFile.IsChildPathOf (WorkspaceFileObject.BaseDirectory)) {
+				return ConfigFile.FileName;
+			}
+
+			return FileService.AbsoluteToRelativePath (WorkspaceFileObject.BaseDirectory, ConfigFile);
 		}
 	}
 }

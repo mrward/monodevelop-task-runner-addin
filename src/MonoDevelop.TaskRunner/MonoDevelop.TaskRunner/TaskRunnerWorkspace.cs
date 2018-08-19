@@ -216,19 +216,12 @@ namespace MonoDevelop.TaskRunner
 
 		async Task CheckTaskRunnerAvailableForFile (ProjectFileEventArgs eventArgs)
 		{
-			var fileEvents = eventArgs.Where (ShouldCheckTaskRunnerProviderForFile);
-
-			foreach (ProjectFileEventInfo fileEventInfo in fileEvents) {
+			foreach (ProjectFileEventInfo fileEventInfo in eventArgs) {
 				ITaskRunner runner = taskRunnerProvider.GetTaskRunner (fileEventInfo.ProjectFile.FilePath);
 				if (runner != null) {
 					await AddTaskRunner (runner, fileEventInfo.ProjectFile.FilePath, fileEventInfo.Project);
 				}
 			}
-		}
-
-		static bool ShouldCheckTaskRunnerProviderForFile (ProjectFileEventInfo fileEventInfo)
-		{
-			return fileEventInfo.ProjectFile.FilePath.ParentDirectory == fileEventInfo.Project.BaseDirectory;
 		}
 
 		async Task AddTaskRunner (ITaskRunner runner, FilePath configFile, Project project)
