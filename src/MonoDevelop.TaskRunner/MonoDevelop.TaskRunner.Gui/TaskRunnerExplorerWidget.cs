@@ -41,6 +41,9 @@ namespace MonoDevelop.TaskRunner.Gui
 	partial class TaskRunnerExplorerWidget
 	{
 		TaskRunnerTreeNode selectedTaskRunnerNode;
+		LogView taskRunnerExplorerOutputLogView;
+		NotebookTab taskRunnerExplorerOutputTab;
+		bool taskRunnerExplorerOutputTabAdded;
 
 		class TabInfo {
 			public RunningTaskInformation Task { get; set; }
@@ -50,6 +53,8 @@ namespace MonoDevelop.TaskRunner.Gui
 		public TaskRunnerExplorerWidget ()
 		{
 			Build ();
+
+			taskRunnerExplorerOutputLogView = new LogView ();
 
 			projectsComboBox.SelectionChanged += ProjectComboBoxSelectionChanged;
 
@@ -233,13 +238,19 @@ namespace MonoDevelop.TaskRunner.Gui
 				var existingTab = notebook.Tabs [i];
 				var tabInfo = existingTab.Child.Tag as TabInfo;
 				// Ignore running task tabs.
-				if (tabInfo?.Task?.IsRunning != true) {
+				if (tabInfo?.Task?.IsRunning != true && existingTab != taskRunnerExplorerOutputTab) {
 					return existingTab;
 				}
 			}
 
 			var logView = new LogView ();
+			return AddTab (logView, name);
+		}
+
+		NotebookTab AddTab (LogView logView, string name)
+		{
 			logView.ShowAll ();
+
 			var logViewWidget = Toolkit.CurrentEngine.WrapWidget (logView, NativeWidgetSizing.DefaultPreferredSize);
 			notebook.Add (logViewWidget, name);
 
@@ -593,6 +604,36 @@ namespace MonoDevelop.TaskRunner.Gui
 		{
 			selectedTaskRunnerNode = GetTaskRunnerTreeNode (tasksTreeView.SelectedRow);
 			OnTaskRunnerSelected (selectedTaskRunnerNode.TaskInfo);
+		}
+
+		public void ShowTaskRunnerExplorerLog ()
+		{
+			if (taskRunnerExplorerOutputTab == null) {
+				string name = GettextCatalog.GetString ("Task Runner Explorer Output");
+				taskRunnerExplorerOutputTab = AddTab (taskRunnerExplorerOutputLogView, name);
+				taskRunnerExplorerOutputTabAdded = true;
+			}
+
+			if (!taskRunnerExplorerOutputTabAdded) {
+				notebook.Tabs.Add (taskRunnerExplorerOutputTab);
+				taskRunnerExplorerOutputTabAdded = true;
+			}
+
+			notebook.CurrentTab = taskRunnerExplorerOutputTab;
+		}
+
+		public void HideTaskRunnerExplorerLog ()
+		{
+			if (taskRunnerExplorerOutputTab == null) {
+				return;
+			}
+
+			notebook.Tabs.Remove (taskRunnerExplorerOutputTab);
+			taskRunnerExplorerOutputTabAdded = false;
+		}
+
+		public LogView TaskRunnerOutputLogView {
+			get { return taskRunnerExplorerOutputLogView; }
 		}
 	}
 }

@@ -1,5 +1,5 @@
 ﻿//
-// TaskRunnerServices.cs
+// TaskRunnerLoggingService.cs
 //
 // Author:
 //       Matt Ward <matt.ward@microsoft.com>
@@ -25,52 +25,19 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Core;
-using MonoDevelop.Ide.Composition;
+using MonoDevelop.TaskRunner.Gui;
 
 namespace MonoDevelop.TaskRunner
 {
-	static class TaskRunnerServices
+	class TaskRunnerLoggingService
 	{
-		static TaskRunnerWorkspace workspace;
-		static TaskRunnerProvider taskRunnerProvider;
-		static TaskRunnerExplorerOptions options;
-		static TaskRunnerLoggingService loggingService;
-
-		public static TaskRunnerWorkspace Workspace {
-			get { return workspace; }
-		}
-
-		public static TaskRunnerExplorerOptions Options {
-			get { return options; }
-		}
-
-		public static bool AutomaticallyRunTasks {
-			get { return options.RunTasksAutomatically; }
-		}
-
-		public static TaskRunnerLoggingService LoggingService {
-			get { return loggingService; }
-		}
-
-		static internal void Initialize ()
+		public void LogInfo (string message)
 		{
-			try {
-				InitializeServices ();
-			} catch (Exception ex) {
-				Core.LoggingService.LogInfo ("TaskRunnerServices.Initialize error", ex);
-			}
-		}
+			if (TaskRunnerExplorerPad.Instance == null)
+				return;
 
-		static void InitializeServices ()
-		{
-			loggingService = new TaskRunnerLoggingService ();
-			options = new TaskRunnerExplorerOptions ();
-
-			taskRunnerProvider = CompositionManager.GetExportedValue<TaskRunnerProvider> ();
-			taskRunnerProvider.Initialize ();
-
-			workspace = new TaskRunnerWorkspace (taskRunnerProvider);
+			message += Environment.NewLine;
+			TaskRunnerExplorerPad.Instance.TaskRunnerOutputLogView.WriteText (message);
 		}
 	}
 }

@@ -36,6 +36,7 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Gui;
+using MonoDevelop.Ide.Gui.Components;
 
 namespace MonoDevelop.TaskRunner.Gui
 {
@@ -45,6 +46,7 @@ namespace MonoDevelop.TaskRunner.Gui
 		Button refreshButton;
 		Button clearButton;
 		Button stopButton;
+		ToggleButton showLogButton;
 		HSeparator separator;
 		List<ToggleButton> optionButtons = new List<ToggleButton> ();
 		DockItemToolbar optionsToolbar;
@@ -101,6 +103,12 @@ namespace MonoDevelop.TaskRunner.Gui
 			clearButton.Clicked += OnClearButtonClick;
 			clearButton.TooltipText = GettextCatalog.GetString ("Clear Output");
 			toolbar.Add (clearButton);
+
+			showLogButton = new ToggleButton ();
+			AddIcon (showLogButton, Ide.Gui.Stock.Console);
+			showLogButton.Clicked += OnShowLogButtonClick;
+			showLogButton.TooltipText = GettextCatalog.GetString ("Show Task Runner Explorer Output");
+			toolbar.Add (showLogButton);
 
 			toolbar.ShowAll ();
 		}
@@ -253,6 +261,20 @@ namespace MonoDevelop.TaskRunner.Gui
 			if (runningTask != null) {
 				runningTask.Stop ();
 			}
+		}
+
+		void OnShowLogButtonClick (object sender, EventArgs e)
+		{
+			var button = (ToggleButton)sender;
+			if (button.Active) {
+				widget.ShowTaskRunnerExplorerLog ();
+			} else {
+				widget.HideTaskRunnerExplorerLog ();
+			}
+		}
+
+		public LogView TaskRunnerOutputLogView {
+			get { return widget.TaskRunnerOutputLogView; }
 		}
 	}
 }
