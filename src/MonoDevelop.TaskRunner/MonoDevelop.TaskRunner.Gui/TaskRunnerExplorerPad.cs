@@ -135,7 +135,7 @@ namespace MonoDevelop.TaskRunner.Gui
 				var task = new TaskRunnerWithOptions (taskRunnerNode, options);
 				RunTaskAsync (task).Ignore ();
 			} catch (Exception ex) {
-				LoggingService.LogInfo ("TaskRunnerExplorerPad.RunTask error", ex);
+				LoggingService.LogError ("TaskRunnerExplorerPad.RunTask error", ex);
 			}
 		}
 
