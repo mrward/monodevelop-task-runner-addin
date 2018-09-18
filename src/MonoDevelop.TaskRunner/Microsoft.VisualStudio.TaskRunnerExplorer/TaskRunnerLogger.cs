@@ -23,13 +23,22 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
+
+using MonoDevelop.TaskRunner;
+
 namespace Microsoft.VisualStudio.TaskRunnerExplorer
 {
-	public class TaskRunnerLogger
+	public static class TaskRunnerLogger
 	{
-		public TaskRunnerLogger ()
+		public static void WriteLine (string message)
 		{
+			TaskRunnerServices.LoggingService.LogInfo (message);
+		}
+
+		public static void WriteLine (string format, params object[] args)
+		{
+			string message = string.Format (format, args);
+			WriteLine (message);
 		}
 	}
 }

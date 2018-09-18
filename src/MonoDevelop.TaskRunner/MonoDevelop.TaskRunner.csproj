@@ -95,6 +95,7 @@
     <Compile Include="MonoDevelop.TaskRunner.Gui\TaskCellView.cs" />
     <Compile Include="MonoDevelop.TaskRunner\RunningTaskInformation.cs" />
     <Compile Include="MonoDevelop.TaskRunner\TaskRunnerLoggingService.cs" />
+    <Compile Include="Microsoft.VisualStudio.TaskRunnerExplorer\TaskRunnerLogger.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\MonoDevelop.TaskRunner.addin.xml" />
