@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.VisualStudio.TaskRunnerExplorer;
 using MonoDevelop.Components;
 using MonoDevelop.Components.Commands;
@@ -72,29 +73,30 @@ namespace MonoDevelop.TaskRunner.Gui
 		public Action<TaskRunnerInformation> OnTaskRunnerSelected =
 			(TaskRunnerInformation task) => { };
 
-		public void ClearTasks ()
+		public void ClearTasks (bool clearTaskRunnerOutputLogView = false)
 		{
 			selectedTaskRunnerNode = null;
 			projectsComboBox.Items.Clear ();
 			tasksTreeStore.Clear ();
 
-			ClearLogViews ();
+			ClearLogViews (clearTaskRunnerOutputLogView);
 		}
 
-		void ClearLogViews ()
+		void ClearLogViews (bool clearTaskRunnerOutputLogView)
 		{
 			for (int i = 1; i < notebook.Tabs.Count; ++i) {
 				var existingTab = notebook.Tabs[i];
-				var tabInfo = existingTab.Child.Tag as TabInfo;
-				if (tabInfo != null) {
-					tabInfo.LogView.Clear ();
+				if (existingTab.Child.Tag is TabInfo tabInfo) {
+					if (clearTaskRunnerOutputLogView || tabInfo.LogView != taskRunnerExplorerOutputLogView) {
+						tabInfo.LogView.Clear ();
+					}
 				}
 			}
 		}
 
 		public void AddTasks (IEnumerable<GroupedTaskRunnerInformation> tasks)
 		{
-			ClearTasks ();
+			ClearTasks (!tasks.Any ());
 			ClearBindings ();
 
 			foreach (var task in tasks) {

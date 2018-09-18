@@ -76,6 +76,11 @@ namespace MonoDevelop.TaskRunner.Gui
 					widget.OnToggleBinding = ToggleBinding;
 					widget.OnTaskRunnerSelected = TaskRunnerSelected;
 					widget.AddTasks (TaskRunnerServices.Workspace.GroupedTasks);
+
+					// Ensure any messages that were logged whilst the pad was not available are
+					// displayed in the output log view.
+					TaskRunnerServices.LoggingService.LogPendingMessages ();
+
 					control = widget.ToGtkWidget ();
 				}
 				return control;

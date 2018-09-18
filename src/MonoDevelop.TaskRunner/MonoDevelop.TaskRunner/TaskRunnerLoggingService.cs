@@ -25,19 +25,54 @@
 // THE SOFTWARE.
 
 using System;
+using System.Text;
 using MonoDevelop.TaskRunner.Gui;
 
 namespace MonoDevelop.TaskRunner
 {
 	class TaskRunnerLoggingService
 	{
+		readonly object lockObject = new object ();
+		StringBuilder messages;
+
 		public void LogInfo (string message)
 		{
-			if (TaskRunnerExplorerPad.Instance == null)
-				return;
+			if (TaskRunnerExplorerPad.Instance == null) {
+				lock (lockObject) {
+					if (TaskRunnerExplorerPad.Instance != null)
+						return;
+
+					if (messages == null) {
+						messages = new StringBuilder ();
+					}
+					messages.AppendLine (message);
+					return;
+				}
+			}
+
+			LogPendingMessages ();
 
 			message += Environment.NewLine;
-			TaskRunnerExplorerPad.Instance.TaskRunnerOutputLogView.WriteText (message);
+			LogViewWriteText (message);
+		}
+
+		public void LogPendingMessages ()
+		{
+			if (messages == null)
+				return;
+
+			lock (lockObject) {
+				if (messages == null)
+					return;
+
+				LogViewWriteText (messages.ToString ());
+				messages = null;
+			}
+		}
+
+		void LogViewWriteText (string message)
+		{
+			TaskRunnerExplorerPad.Instance.TaskRunnerOutputLogView.WriteText (null, message);
 		}
 	}
 }
