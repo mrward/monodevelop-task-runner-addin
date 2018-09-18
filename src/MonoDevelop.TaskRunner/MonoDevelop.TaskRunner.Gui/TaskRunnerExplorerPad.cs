@@ -43,6 +43,7 @@ namespace MonoDevelop.TaskRunner.Gui
 	class TaskRunnerExplorerPad : PadContent
 	{
 		TaskRunnerExplorerWidget widget;
+		Control control;
 		Button refreshButton;
 		Button clearButton;
 		Button stopButton;
@@ -63,16 +64,21 @@ namespace MonoDevelop.TaskRunner.Gui
 			TaskRunnerServices.Workspace.TasksChanged -= TasksChanged;
 
 			base.Dispose ();
+
+			widget.Dispose ();
 		}
 
 		public override Control Control {
 			get {
-				widget = new TaskRunnerExplorerWidget ();
-				widget.OnRunTask = RunTask;
-				widget.OnToggleBinding = ToggleBinding;
-				widget.OnTaskRunnerSelected = TaskRunnerSelected;
-				widget.AddTasks (TaskRunnerServices.Workspace.GroupedTasks);
-				return widget.ToGtkWidget ();
+				if (widget == null) {
+					widget = new TaskRunnerExplorerWidget ();
+					widget.OnRunTask = RunTask;
+					widget.OnToggleBinding = ToggleBinding;
+					widget.OnTaskRunnerSelected = TaskRunnerSelected;
+					widget.AddTasks (TaskRunnerServices.Workspace.GroupedTasks);
+					control = widget.ToGtkWidget ();
+				}
+				return control;
 			}
 		}
 
