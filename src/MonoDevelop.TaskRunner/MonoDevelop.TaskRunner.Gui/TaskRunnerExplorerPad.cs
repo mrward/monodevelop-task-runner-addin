@@ -75,6 +75,7 @@ namespace MonoDevelop.TaskRunner.Gui
 					widget.OnRunTask = RunTask;
 					widget.OnToggleBinding = ToggleBinding;
 					widget.OnTaskRunnerSelected = TaskRunnerSelected;
+					widget.OnTaskRunnerOutputViewChanged = TaskRunnerOutputViewChanged;
 					widget.AddTasks (TaskRunnerServices.Workspace.GroupedTasks);
 
 					// Ensure any messages that were logged whilst the pad was not available are
@@ -286,6 +287,11 @@ namespace MonoDevelop.TaskRunner.Gui
 
 		public LogView TaskRunnerOutputLogView {
 			get { return widget.TaskRunnerOutputLogView; }
+		}
+
+		void TaskRunnerOutputViewChanged (bool open)
+		{
+			showLogButton.Active = open;
 		}
 	}
 }

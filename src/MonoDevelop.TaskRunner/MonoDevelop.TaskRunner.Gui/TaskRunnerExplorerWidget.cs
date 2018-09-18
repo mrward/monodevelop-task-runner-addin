@@ -67,11 +67,13 @@ namespace MonoDevelop.TaskRunner.Gui
 		}
 
 		public Action<ITaskRunnerNode, IEnumerable<ITaskRunnerOption>> OnRunTask = (node, options) => { };
+
 		public Action<TaskRunnerInformation, ITaskRunnerNode, TaskRunnerBindEvent> OnToggleBinding =
 			(info, node, bindEvent) => { };
 
-		public Action<TaskRunnerInformation> OnTaskRunnerSelected =
-			(TaskRunnerInformation task) => { };
+		public Action<TaskRunnerInformation> OnTaskRunnerSelected = task => { };
+
+		public Action<bool> OnTaskRunnerOutputViewChanged = open => { };
 
 		public void ClearTasks (bool clearTaskRunnerOutputLogView = false)
 		{
@@ -627,6 +629,8 @@ namespace MonoDevelop.TaskRunner.Gui
 			}
 
 			notebook.CurrentTab = taskRunnerExplorerOutputTab;
+
+			OnTaskRunnerOutputViewChanged (true);
 		}
 
 		public void HideTaskRunnerExplorerLog ()
@@ -637,6 +641,8 @@ namespace MonoDevelop.TaskRunner.Gui
 
 			notebook.Tabs.Remove (taskRunnerExplorerOutputTab);
 			taskRunnerExplorerOutputTabAdded = false;
+
+			OnTaskRunnerOutputViewChanged (false);
 		}
 
 		public LogView TaskRunnerOutputLogView {
