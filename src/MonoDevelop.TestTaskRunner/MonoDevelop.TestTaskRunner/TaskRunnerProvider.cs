@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TaskRunnerExplorer;
+using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.TestTaskRunner
@@ -34,10 +35,28 @@ namespace MonoDevelop.TestTaskRunner
 
 		public async Task<ITaskRunnerConfig> ParseConfig (ITaskRunnerCommandContext context, string configPath)
 		{
-			return await Task.Run (() => {
-				ITaskRunnerNode hierarchy = LoadHierarchy (configPath);
-				return new TaskRunnerConfig (hierarchy);
+			try {
+				return await Task.Run (() => {
+					TaskRunnerLogger.WriteLine ("TestTaskRunnerProvider.ParseConfig configPath={0}", configPath);
+					ITaskRunnerNode hierarchy = LoadHierarchy (configPath);
+					return new TaskRunnerConfig (hierarchy);
+				});
+			} catch (Exception ex) {
+				TaskRunnerLogger.WriteLine ("Load failed. {0}", ex.Message);
+				return CreateErrorTaskRunnerConfig (ex);
+			}
+		}
+
+		TaskRunnerConfig CreateErrorTaskRunnerConfig (Exception ex)
+		{
+			var root = new TaskRunnerNode ("My Config");
+
+			string message = GettextCatalog.GetString ("Failed to load. Please open the Task Runner Explorer Output for more information.");
+			root.Children.Add (new TaskRunnerNode (message, false) {
+				Description = "Failed to load."
 			});
+
+			return new TaskRunnerConfig (root);
 		}
 
 		/// <summary>
