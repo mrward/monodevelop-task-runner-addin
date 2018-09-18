@@ -39,6 +39,10 @@
 				_description="Move the selected binding after the next one"
 				icon="gtk-go-down"
 				_label="Move _Down" />
+			<Command
+				id="MonoDevelop.TaskRunner.TaskRunnerCommands.ShowOutput"
+				_description="Opens the Task Runner Explorer Output"
+				_label="_Show Task Runner Explorer Output" />
 		</Category>
 	</Extension>
 
@@ -48,6 +52,7 @@
 	</ExtensionPoint>
 
 	<Extension path="/MonoDevelop/TaskRunnerExplorerPad/TaskContextMenu">
+		<CommandItem id="MonoDevelop.TaskRunner.TaskRunnerCommands.ShowOutput" />
 		<CommandItem id="MonoDevelop.TaskRunner.TaskRunnerCommands.RunTask" />
 		<ItemSet id="Bindings" _label="_Bindings">
 			<CommandItem id="MonoDevelop.TaskRunner.TaskRunnerCommands.ToggleBeforeBuildBinding" />

@@ -1,5 +1,5 @@
 ﻿//
-// TaskRunnerCommands.cs
+// TaskRunnerErrorNode.cs
 //
 // Author:
 //       Matt Ward <matt.ward@microsoft.com>
@@ -24,17 +24,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace MonoDevelop.TaskRunner
+namespace Microsoft.VisualStudio.TaskRunnerExplorer
 {
-	enum TaskRunnerCommands
+	/// <summary>
+	/// Supports opening the Task Runner Explorer Output window to show more information about the error.
+	/// </summary>
+	public class TaskRunnerErrorNode : TaskRunnerNode
 	{
-		RunTask,
-		ToggleAfterBuildBinding,
-		ToggleBeforeBuildBinding,
-		ToggleCleanBinding,
-		ToggleProjectOpenBinding,
-		MoveBindingUp,
-		MoveBindingDown,
-		ShowOutput
+		public TaskRunnerErrorNode (string name)
+			: base (name)
+		{
+		}
 	}
 }

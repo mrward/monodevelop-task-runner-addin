@@ -324,7 +324,12 @@ namespace MonoDevelop.TaskRunner.Gui
 		void TasksTreeViewRowActivated (object sender, TreeViewRowEventArgs e)
 		{
 			selectedTaskRunnerNode = GetTaskRunnerTreeNode (e.Position);
-			RunTask ();
+
+			if (selectedTaskRunnerNode?.GetErrorNode () != null) {
+				ShowTaskRunnerExplorerLog ();
+			} else {
+				RunTask ();
+			}
 		}
 
 		bool CanRunSelectedTask ()
@@ -636,6 +641,28 @@ namespace MonoDevelop.TaskRunner.Gui
 
 		public LogView TaskRunnerOutputLogView {
 			get { return taskRunnerExplorerOutputLogView; }
+		}
+
+		[CommandUpdateHandler (TaskRunnerCommands.ShowOutput)]
+		void OnUpdateShowOutput (CommandInfo info)
+		{
+			bool canShowOutput = GetSelectedErrorNode () != null;
+			info.Visible = canShowOutput;
+			info.Enabled = canShowOutput;
+		}
+
+		TaskRunnerErrorNode GetSelectedErrorNode ()
+		{
+			return selectedTaskRunnerNode?.GetErrorNode ();
+		}
+
+		[CommandHandler (TaskRunnerCommands.ShowOutput)]
+		void OnShowOutput ()
+		{
+			TaskRunnerErrorNode errorNode = GetSelectedErrorNode ();
+			if (errorNode != null) {
+				ShowTaskRunnerExplorerLog ();
+			}
 		}
 	}
 }

@@ -49,10 +49,10 @@ namespace MonoDevelop.TestTaskRunner
 
 		TaskRunnerConfig CreateErrorTaskRunnerConfig (Exception ex)
 		{
-			var root = new TaskRunnerNode ("My Config");
+			var root = new TaskRunnerErrorNode ("My Config");
 
 			string message = GettextCatalog.GetString ("Failed to load. Please open the Task Runner Explorer Output for more information.");
-			root.Children.Add (new TaskRunnerNode (message, false) {
+			root.Children.Add (new TaskRunnerErrorNode (message) {
 				Description = "Failed to load."
 			});
 

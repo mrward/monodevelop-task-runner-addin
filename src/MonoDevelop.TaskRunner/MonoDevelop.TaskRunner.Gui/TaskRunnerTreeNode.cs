@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TaskRunnerExplorer;
@@ -94,6 +95,14 @@ namespace MonoDevelop.TaskRunner.Gui
 		public bool IsBindingEnabled (TaskRunnerBindEvent bindEvent)
 		{
 			return taskRunnerInfo.IsBindingEnabled (bindEvent, taskRunnerNode);
+		}
+
+		public TaskRunnerErrorNode GetErrorNode ()
+		{
+			if (TaskRunner is TaskRunnerErrorNode errorNode)
+				return errorNode;
+
+			return taskRunnerInfo?.Config?.TaskHierarchy as TaskRunnerErrorNode;
 		}
 	}
 }
