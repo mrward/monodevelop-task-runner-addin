@@ -57,8 +57,9 @@ namespace MonoDevelop.TaskRunner
 
 		async Task FindTaskInternal ()
 		{
+			var filesAdded = new HashSet<FilePath> ();
 			foreach (var project in solution.GetAllProjects ()) {
-				var foundProjectTasks = await FindTasks (project);
+				var foundProjectTasks = await FindTasks (project, filesAdded);
 				if (foundProjectTasks != null) {
 					var info = new GroupedTaskRunnerInformation (project, foundProjectTasks);
 					groupedTasks.Add (info);
@@ -67,7 +68,7 @@ namespace MonoDevelop.TaskRunner
 
 			groupedTasks.Sort (GroupedTaskRunnerInformationComparer.Instance);
 
-			var foundTasks = await FindTasks (solution);
+			var foundTasks = await FindTasks (solution, filesAdded);
 
 			if (foundTasks != null) {
 				var info = new GroupedTaskRunnerInformation (solution, foundTasks);
@@ -75,10 +76,17 @@ namespace MonoDevelop.TaskRunner
 			}
 		}
 
-		public async Task<List<TaskRunnerInformation>> FindTasks (IWorkspaceFileObject workspaceFileObject)
+		public Task<List<TaskRunnerInformation>> FindTasks (IWorkspaceFileObject workspaceFileObject)
+		{
+			var filesAdded = new HashSet<FilePath> ();
+			return FindTasks (workspaceFileObject, filesAdded);
+		}
+
+		public async Task<List<TaskRunnerInformation>> FindTasks (
+			IWorkspaceFileObject workspaceFileObject,
+			HashSet<FilePath> filesAdded)
 		{
 			List<TaskRunnerInformation> foundTasks = null;
-			var filesAdded = new HashSet<FilePath> ();
 
 			foreach (FilePath configFile in GetFiles (workspaceFileObject)) {
 				if (!filesAdded.Contains (configFile)) {
