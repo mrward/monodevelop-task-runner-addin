@@ -217,11 +217,24 @@ namespace MonoDevelop.TaskRunner
 		async Task CheckTaskRunnerAvailableForFile (ProjectFileEventArgs eventArgs)
 		{
 			foreach (ProjectFileEventInfo fileEventInfo in eventArgs) {
-				ITaskRunner runner = taskRunnerProvider.GetTaskRunner (fileEventInfo.ProjectFile.FilePath);
+				FilePath configFile = fileEventInfo.ProjectFile.FilePath;
+				ITaskRunner runner = taskRunnerProvider.GetTaskRunner (configFile);
 				if (runner != null) {
-					await AddTaskRunner (runner, fileEventInfo.ProjectFile.FilePath, fileEventInfo.Project);
+					if (!TaskAlreadyAdded (fileEventInfo.Project, configFile)) {
+						await AddTaskRunner (runner, configFile, fileEventInfo.Project);
+					}
 				}
 			}
+		}
+
+		bool TaskAlreadyAdded (Project project, FilePath configFile)
+		{
+			var groupedTask = GetGroupedTask (project);
+			if (groupedTask == null) {
+				return false;
+			}
+
+			return groupedTask.Tasks.Any (task => task.ConfigFile == configFile);
 		}
 
 		async Task AddTaskRunner (ITaskRunner runner, FilePath configFile, Project project)
