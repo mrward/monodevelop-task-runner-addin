@@ -30,7 +30,6 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TaskRunnerExplorer;
 using MonoDevelop.Core;
 using MonoDevelop.Projects;
-using System.Collections;
 
 namespace MonoDevelop.TaskRunner
 {
@@ -114,8 +113,23 @@ namespace MonoDevelop.TaskRunner
 				}
 			}
 
+			if (workspaceFileObject is Solution solution) {
+				foreach (FilePath file in GetSolutionFolderFiles (solution.RootFolder)) {
+					yield return file;
+				}
+			}
+
 			foreach (FilePath configFile in Directory.EnumerateFiles (workspaceFileObject.BaseDirectory)) {
 				yield return configFile;
+			}
+		}
+
+		static IEnumerable<FilePath> GetSolutionFolderFiles (SolutionFolder rootFolder)
+		{
+			foreach (SolutionFolder folder in rootFolder.GetAllItems<SolutionFolder> ()) {
+				foreach (FilePath file in folder.Files) {
+					yield return file;
+				}
 			}
 		}
 	}
