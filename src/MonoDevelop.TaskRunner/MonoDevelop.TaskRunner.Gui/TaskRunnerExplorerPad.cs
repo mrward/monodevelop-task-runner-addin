@@ -225,7 +225,7 @@ namespace MonoDevelop.TaskRunner.Gui
 
 		void AddOptionsButton (TaskRunnerInformation task)
 		{
-			if (task == null || !task.Options.Any ())
+			if (task?.Options == null || !task.Options.Any ())
 				return;
 
 			separator = new HSeparator ();
