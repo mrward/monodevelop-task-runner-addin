@@ -612,7 +612,7 @@ namespace MonoDevelop.TaskRunner.Gui
 		void TasksTreeViewSelectionChanged (object sender, EventArgs e)
 		{
 			selectedTaskRunnerNode = GetTaskRunnerTreeNode (tasksTreeView.SelectedRow);
-			OnTaskRunnerSelected (selectedTaskRunnerNode.TaskInfo);
+			OnTaskRunnerSelected (selectedTaskRunnerNode?.TaskInfo);
 		}
 
 		public void ShowTaskRunnerExplorerLog ()
