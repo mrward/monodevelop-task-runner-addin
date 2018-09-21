@@ -35,5 +35,5 @@ using Mono.Addins;
 [assembly:AddinName ("Task Runner Explorer")]
 [assembly:AddinDescription ("Adds a Task Runner Explorer")]
 
-[assembly:AddinDependency ("Core", "7.4")]
-[assembly:AddinDependency ("Ide", "7.4")]
+[assembly:AddinDependency ("Core", "7.5")]
+[assembly:AddinDependency ("Ide", "7.5")]
