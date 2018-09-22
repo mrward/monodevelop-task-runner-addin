@@ -10,6 +10,9 @@ cp ../monodevelop-grunt-task-runner/bin/GruntScript/GruntTaskList.js src/MonoDev
 # Gulp
 cp ../monodevelop-gulp-task-runner/bin/MonoDevelop.GulpTaskRunner.dll src/MonoDevelop.TaskRunnersBundle/
 
+# NPM
+cp ../NpmTaskRunner/bin/MonoDevelop.NpmTaskRunner.dll src/MonoDevelop.TaskRunnersBundle/
+
 # TypeScript
 cp ../monodevelop-typescript-task-runner/bin/MonoDevelop.TypeScriptTaskRunner.dll src/MonoDevelop.TaskRunnersBundle/
 

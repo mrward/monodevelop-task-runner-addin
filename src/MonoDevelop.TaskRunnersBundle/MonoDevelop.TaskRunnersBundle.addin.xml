@@ -17,7 +17,9 @@
 		<Import file="GruntScript/GruntTaskList.js" />
 
 		<Import file="MonoDevelop.GulpTaskRunner.dll" />
-		
+
+		<Import file="MonoDevelop.NpmTaskRunner.dll" />
+
 		<Import file="MonoDevelop.TypeScriptTaskRunner.dll" />
 	</Runtime>
 
@@ -50,6 +52,15 @@
 	<Module>
 		<Runtime>
 			<Import assembly="MonoDevelop.GulpTaskRunner.dll" />
+		</Runtime>
+		<Dependencies>
+			<Addin id="::MonoDevelop.TaskRunner" version="0.1"/>
+		</Dependencies>
+	</Module>
+
+	<Module>
+		<Runtime>
+			<Import assembly="MonoDevelop.NpmTaskRunner.dll" />
 		</Runtime>
 		<Dependencies>
 			<Addin id="::MonoDevelop.TaskRunner" version="0.1"/>
