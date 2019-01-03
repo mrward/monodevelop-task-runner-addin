@@ -5,7 +5,7 @@
 	author      = "Matt Ward"
 	copyright   = "MIT"
 	url         = "https://github.com/mrward/monodevelop-task-runner-addin"
-	description = "Bundled Task Runners: Cake, Grunt, Gulp and TypeScript)"
+	description = "Bundled Task Runners: Cake, Grunt, Gulp, NPM and TypeScript"
 	category    = "IDE extensions"
 	version     = "0.1">
 
