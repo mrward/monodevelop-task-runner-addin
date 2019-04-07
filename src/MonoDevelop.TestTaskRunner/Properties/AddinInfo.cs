@@ -33,7 +33,7 @@ using Mono.Addins;
 	Category = "IDE extensions")]
 
 [assembly:AddinName ("Test Task Runner")]
-[assembly:AddinDescription ("Adds a Test Task Runner based on https://github.com/madskristensen/TaskRunnerTemplate")]
+[assembly:AddinDescription ("Adds a Test Task Runner based on https://github.com/madskristensen/TaskRunnerTemplate Task runners available separately with the Task Runners Bundle addin")]
 
-[assembly:AddinDependency ("Core", "7.4")]
-[assembly:AddinDependency ("Ide", "7.4")]
+[assembly:AddinDependency ("Core", "8.0")]
+[assembly:AddinDependency ("Ide", "8.0")]

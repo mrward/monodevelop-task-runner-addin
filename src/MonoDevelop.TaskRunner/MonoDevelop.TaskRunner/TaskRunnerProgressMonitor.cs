@@ -67,13 +67,15 @@ namespace MonoDevelop.TaskRunner
 			return standardOutput.ToString ();
 		}
 
-		public override void Dispose ()
+		protected override void OnDispose (bool disposing)
 		{
-			if (outputProgressMonitor != null) {
-				outputProgressMonitor.Dispose ();
-				outputProgressMonitor = null;
+			if (disposing) {
+				if (outputProgressMonitor != null) {
+					outputProgressMonitor.Dispose ();
+					outputProgressMonitor = null;
+				}
 			}
-			base.Dispose ();
+			base.OnDispose (disposing);
 		}
 	}
 }

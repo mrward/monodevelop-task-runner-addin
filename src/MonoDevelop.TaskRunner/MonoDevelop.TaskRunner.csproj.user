@@ -2,7 +2,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'Default' ">
     <StartAction>Program</StartAction>
-    <StartProgram>$(MDBinDir)\MonoDevelop.exe</StartProgram>
+    <StartProgram>$(MDBinDir)\VisualStudio.exe</StartProgram>
     <StartWorkingDirectory>$(MDBinDir)</StartWorkingDirectory>
     <EnvironmentVariables>
       <Variable name="MONODEVELOP_DEV_ADDINS" value="${TargetDir}" />
