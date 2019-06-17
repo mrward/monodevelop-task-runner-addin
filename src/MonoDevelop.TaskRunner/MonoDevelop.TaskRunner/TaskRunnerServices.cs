@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using MonoDevelop.Core;
 using MonoDevelop.Ide.Composition;
 
 namespace MonoDevelop.TaskRunner
@@ -67,7 +66,7 @@ namespace MonoDevelop.TaskRunner
 			loggingService = new TaskRunnerLoggingService ();
 			options = new TaskRunnerExplorerOptions ();
 
-			taskRunnerProvider = CompositionManager.GetExportedValue<TaskRunnerProvider> ();
+			taskRunnerProvider = CompositionManager.Instance.GetExportedValue<TaskRunnerProvider> ();
 			taskRunnerProvider.Initialize ();
 
 			workspace = new TaskRunnerWorkspace (taskRunnerProvider);
