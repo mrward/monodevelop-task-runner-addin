@@ -29,12 +29,12 @@ using Mono.Addins;
 [assembly:Addin (
 	"TaskRunner",
 	Namespace = "MonoDevelop",
-	Version = "0.1.1",
+	Version = "0.1.2",
 	Category = "IDE extensions")]
 
 [assembly:AddinName ("Task Runner Explorer")]
 [assembly:AddinDescription ("Adds a Task Runner Explorer")]
 
-[assembly:AddinDependency ("Core", "8.0")]
-[assembly:AddinDependency ("Ide", "8.0")]
+[assembly:AddinDependency ("Core", "8.1")]
+[assembly:AddinDependency ("Ide", "8.1")]
 
